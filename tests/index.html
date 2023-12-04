@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Document</title>
+    <style>
+        #result {
+            background-color: black;
+            color: antiquewhite;
+            min-height: 25px;
+            width: 100px;
+        }
+    </style>
+</head>
+
+<body id="body">
+    <div id="result">0</div>
+    <button onclick="calculate('add')">+</button>
+    <button onclick="calculate('sub')">-</button>
+    <button onclick="calculate('mul')">*</button>
+    <button onclick="calculate('div')">/</button>
+    <input type="number" id="input">
+    <button onclick="showresult()">=</button>
+</body>
+<script>
+    const result = document.getElementById("result")
+    const input = document.getElementById("input")
+    const body = document.getElementById("body")
+
+    function showresult(){
+        body.style.background="aqua"
+        result.style.background="aqua"
+        result.style.height="100px";
+        result.style.width="200px";
+    }
+
+    function calculate(operation) {
+        const resultvalue = parseInt(result.innerText);
+        const inputvalue = parseInt(input.value);
+        let output;
+        if (operation == "add") {
+            output = resultvalue + inputvalue;
+            console.log(output)
+        }
+        if (operation == "sub") {
+            output = resultvalue - inputvalue;
+            console.log(output)
+        }
+        if (operation == "mul") {
+            output = resultvalue * inputvalue;
+            console.log(output)
+        }
+        if (operation == "div") {
+            output = resultvalue / inputvalue;
+            console.log(output)
+        }
+        result.innerText = output.toString()
+        input.value=""
+    }
+</script>
+
+</html>

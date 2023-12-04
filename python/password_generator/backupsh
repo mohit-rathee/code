@@ -1,0 +1,45 @@
+for i in range(len(list)):
+        y=list[i]
+        y=y.split()
+        if len(y)==0:
+            return preff
+        elif len(y)==1:
+            if y[0]=="num":
+                preff.extend([str("".join(random.choice(num)))])
+            elif y[0]=="alf":
+                preff.extend([str("".join(random.choice(alf)))])      
+            elif y[0]=="ALF":
+                preff.extend([str("".join(random.choice(ALF)))])      
+            elif y[0]=="@@@":
+                preff.extend([str("".join(random.choice(spec_char)))])      
+            else:
+                preff.extend(y) 
+        elif len(y)==2:
+            if  y[1].isdigit():
+                
+                if (y[0]=="num"):
+                    l=int(y[1])
+                    newnum=[str("".join(random.choices(num,k=l)))]
+                    preff.extend(newnum)
+
+                elif (y[0]=="alf"):
+                    l=int(y[1])
+                    newalf=[str("".join(random.choices(alf,k=l)))]
+                    preff.extend(newalf)
+                
+                elif (y[0]=="ALF"):
+                    l=int(y[1])
+                    newALF=[str("".join(random.choices(ALF,k=l)))]
+                    preff.extend(newALF)
+
+                elif (y[0]=="@@@"):
+                    l=int(y[1])
+                    newspec_char=[str("".join(random.choices(spec_char,k=l)))]
+                    preff.extend(newspec_char)
+            else:
+                for i in range(len(y)):
+                    preff.append(y[i])
+
+        elif  len(y)>2:
+            for i in range(len(y)):
+                preff.append(y[i])
