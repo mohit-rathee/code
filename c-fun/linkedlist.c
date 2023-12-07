@@ -1,17 +1,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// Average struct.
 typedef struct Node {
     int data;
     struct Node* next;
 }Node;
-// function prototypes
+
+// My functions
 void help();
 Node* addNode(int i, Node* node);
 void printList(Node* head);
 void deleteNode(int i, Node* head); // i is value not index
 void insertNode(int pos, int i, Node* head); // pos should not be 0 or -ve.
 
+//Main
 int main(){
     Node* head = NULL;
     char option = '\n';
@@ -75,7 +78,7 @@ void help(){
     printf("\th. Help\n");
     printf("\tq. Exit\n");
 }
-Node* addNode(int i, Node* node){
+Node* addNode(int i, Node* node){ // -> *Node
     Node *newNode = malloc(sizeof(Node));
     newNode->data = i;
     if (node!=NULL) {
@@ -106,7 +109,7 @@ void insertNode(int pos, int i, Node* head){
     while(pos != 1 && head != NULL){ // when pos is not met.
         head = head->next;
         pos--;
-    }// when pos is met
+    }// when pos is met or loop ended.
     if(head == NULL){
         printf("Index out of range.\n");
         return;
@@ -116,5 +119,3 @@ void insertNode(int pos, int i, Node* head){
     newNode->next = head->next;
     head->next = newNode;
 }
-
-
