@@ -1,16 +1,17 @@
-#include <math.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdio.h>
 typedef enum {
     Int,
     String,
+    Char,
     Bool,
 } class ;
 
 typedef union {
     int num;
     char* str;
+    char chr;
     _Bool boool;
 
 } value;
@@ -33,26 +34,29 @@ list* initList(){ // I will give [1,2,3,4,] will create a list in future.
     my_list->arr = (dataObj *) malloc(capacity*sizeof(dataObj)) ; 
     //filing data
     my_list->arr[0]=(dataObj){.class=Int,.data={.num=5}};
-    my_list->arr[1]=(dataObj){.class=String,.data={.str="AAAA"}};
-    my_list->arr[2]=(dataObj){.class=Bool,.data={.boool=true}};
+    my_list->arr[1]=(dataObj){.class=Char,.data={.chr='f'}};
+    my_list->arr[2]=(dataObj){.class=String,.data={.str="AAAA"}};
+    my_list->arr[3]=(dataObj){.class=Bool,.data={.boool=true}};
     my_list->size=3; 
     return my_list;
 }
 void printObj(dataObj* object){ //pass-by-ref to reduce time.
-        switch (object->class) {
-            case Int:
-                printf("<class: int> <data: %d>\n",object->data.num);
-                break;
-            case String:
-                printf("<class: String> <data: %s>\n",object->data.str);
-                break;
-            case Bool:
-                printf("<class: Bool> <data: %d>\n",object->data.boool);
-                break;
-            default:
-                printf("<class: Null> <data: %d>\n",object->data.num);
-                break;
-        }
+    switch (object->class) {
+        case Int:
+            printf("<class: int> <data: %d>\n",object->data.num);
+            break;
+        case String:
+            printf("<class: String> <data: %s>\n",object->data.str);
+            break;
+        case Bool:
+            printf("<class: Bool> <data: %d>\n",object->data.boool);
+            break;
+        case Char:
+            printf("<class: Char> <data: %c>\n",object->data.chr);
+        default:
+            printf("<class: Null> <data: %d>\n",object->data.num);
+            break;
+    }
 }
 void print(list *my_list){
     int capacity = my_list->capacity;
@@ -93,8 +97,9 @@ dataObj get(list* my_list,int index){
     printf("list index out of range.");
 }
 int main(){
+    //Initialise list
     list* myList = initList();
-    print(myList);
+
     //Append
     //Don't mismatch enumType and valueType
     dataObj val = {.class=String,.data={.str="BBBB"}}; 
@@ -102,7 +107,7 @@ int main(){
     print(myList);
 
     //Get
-    dataObj bbbb = get(myList,2);
+    dataObj bbbb = get(myList,1);
     printObj(&bbbb);
 
     //Pop
