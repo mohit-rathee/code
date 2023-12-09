@@ -1,1 +1,4 @@
-a=[]*1000000000
+a=[1]*100000000
+print('created')
+a.pop(50000)
+print('deleted')
