@@ -38,37 +38,37 @@ list* initList(){ // I will give [1,2,3,4,] will create a list in future.
     my_list->size=3; 
     return my_list;
 }
-
+void printObj(dataObj* object){ //pass-by-ref to reduce time.
+        switch (object->class) {
+            case Int:
+                printf("<class: int> <data: %d>\n",object->data.num);
+                break;
+            case String:
+                printf("<class: String> <data: %s>\n",object->data.str);
+                break;
+            case Bool:
+                printf("<class: Bool> <data: %d>\n",object->data.boool);
+                break;
+            default:
+                printf("<class: Null> <data: %d>\n",object->data.num);
+                break;
+        }
+}
 void print(list *my_list){
     int capacity = my_list->capacity;
     int size = my_list->size;
     printf("capacity: %d \n",capacity);
     printf("size: %d \n",size);
-    printf("[");
+    printf("[\n");
     dataObj* arr = my_list->arr;
     for (int i=0;i<size;i++){
-        switch (arr[i].class) {
-            case Int:
-                printf("<class: int> <data: %d>, ",arr[i].data.num);
-                break;
-            case String:
-                printf("<class: String> <data: %s>, ",arr[i].data.str);
-                break;
-            case Bool:
-                printf("<class: Bool> <data: %d>, ",arr[i].data.boool);
-                break;
-            default:
-                printf("<class: Null> <data: %d>, ",arr[i].data.num);
-                break;
-        }
+        printObj(&arr[i]);
     }
     printf("]\n");
     
 
 }
 void append(list* my_list, dataObj dataobj){
-    printf("type: %d\n",dataobj.class);
-    printf("%s\n",dataobj.data.str);
     int capacity = my_list->capacity;
     int size = my_list->size;
     if (size>capacity){
@@ -84,15 +84,26 @@ dataObj pop(list* my_list){
     my_list->size--;
     return retVal;
 }
+dataObj get(list* my_list,int index){
+    if(index<0){index=-index;}
+    if(index<my_list->size){
+        dataObj retVal = my_list->arr[index];
+        return retVal;
+    }
+    printf("list index out of range.");
+}
 int main(){
     list* myList = initList();
     print(myList);
-
     //Append
     //Don't mismatch enumType and valueType
     dataObj val = {.class=String,.data={.str="BBBB"}}; 
     append(myList, val); 
     print(myList);
+
+    //Get
+    dataObj bbbb = get(myList,2);
+    printObj(&bbbb);
 
     //Pop
     dataObj waste= pop(myList);
