@@ -1,44 +1,72 @@
 #include <stdlib.h>
+#include <stdbool.h>
 #include <stdio.h>
 typedef enum {
     Int,
     String,
     List,
     Bool,
-    Null,
 } class ;
+
 typedef union {
     int num;
-    void* ptr;
-} addr;
-typedef struct {
-    class type;
-    addr data;
-} data ;
+    char* str;
+    _Bool boool;
+
+} value;
+typedef struct{
+    class class;
+    value data;
+} datatype;
 
 typedef struct {
     int capacity;
     int size;
-    data* arr;
+    datatype* arr;
 } list ;
 
 list* initList(){ // I will give [1,2,3,4,] will create a list in future.
-    int capacity = 2;
+    int capacity = 50;
     list *my_list = malloc(sizeof(list));
     my_list->capacity = capacity;
     my_list->size = 0;
-    my_list->arr = (data *) malloc(capacity*sizeof(data)) ; 
-    for (int i=0; i<capacity; i++) {
-        int *a = malloc(sizeof(int));
-        data dt;
-        dt.type = String;
-        dt.data.ptr = a;
-        my_list->arr[i]=dt;
-        printf("%p\n",a);
-    }
+    my_list->arr = (datatype *) malloc(capacity*sizeof(datatype)) ; 
+    //filing data
+    my_list->arr[0]=(datatype){.class=Int,.data={.num=5}};
+    my_list->arr[1]=(datatype){.class=String,.data={.str="AAAA"}};
+    my_list->arr[2]=(datatype){.class=Bool,.data={.boool=true}};
+    my_list->size=4; //if error the put this to 3
     return my_list;
 }
 
+void printList(list *my_list){
+    int capacity = my_list->capacity;
+    int size = my_list->size;
+    printf("capacity: %d \n",capacity);
+    printf("size: %d \n",size);
+    printf("[");
+    datatype* arr = my_list->arr;
+    for (int i=0;i<size;i++){
+        switch (arr[i].class) {
+            case Int:
+                printf("<class: int> <data: %d>, ",arr[i].data.num);
+                break;
+            case String:
+                printf("<class: String> <data: %s>, ",arr[i].data.str);
+                break;
+            case Bool:
+                printf("<class: Bool> <data: %d>, ",arr[i].data.boool);
+                break;
+            default:
+                printf("<class: Null> <data: %d>, ",arr[i].data.num);
+                break;
+        }
+    }
+    printf("]\n");
+    
+
+}
 int main(){
     list *myList = initList();
+    printList(myList);
 }
