@@ -1,0 +1,1 @@
+/home/Arch/code/rust/magic/target/debug/magic: /home/Arch/code/rust/magic/src/hello/hello.rs /home/Arch/code/rust/magic/src/hello/mod.rs /home/Arch/code/rust/magic/src/lib.rs /home/Arch/code/rust/magic/src/main.rs
