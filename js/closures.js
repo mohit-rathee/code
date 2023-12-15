@@ -21,4 +21,15 @@ function b(){
         magic(i);
     }
 }
+
+function c(){
+    for (let i=0;i<6;i++){
+        setTimeout(function (){
+            console.log(i);
+        },i*1000); 
+    }
+}
+
 a();
+b();
+c();
