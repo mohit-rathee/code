@@ -1,36 +1,58 @@
+// async function is called inside a non-async function (i.e GEC)
+const anything = dosomething() // ==> JUMP TO dosomething function.  <== came back from dosomething2
+// <== CAME back from dosomething function.
+//   anything = PENDING promise.
 
+//attach a callback function
+anything.then((res)=>console.log(res)) // call this callback function
 
-async function dosomething2(){
-    for(let i=0;i<10000;i++){
-        let s=i+i
-    }
-    console.log('processing2 ...')
-    return "namaste javascript !!!";
+for(let i=0;i<10;i++){
+    let s=i+i
 }
 
+console.log('main loop end')
 
-async function dosomething(){
-    for(let i=0;i<10000;i++){
+const anything = dosomething() // ==> JUMP TO dosomething function.
+// STACK CALL IS EMPTY NOW, moving to dosomething2
+async function dosomething(){ // <== dosomething execution starts syncronusly
+    for(let i=0;i<10;i++){
         let s=i+i
     }
     console.log('loop end')
-    await dosomething2();
-    // awaiting will run dosomething2 but when
-    // it's time to return result it will 
-    // suspend the dosomething function and
-    // starts with the main function
+    const res =dosomething2(); //==> JUMP TO dosomething2 function.
+    console.log(res)  // PENDING promise
+
+    await res;   //encounters a promise, so it suspends and JUMP TO GEC with PENDING promise.
+
+    // it it spawned just after call stack was empty.when dosomething2 was executing.
+    // <== CAME FROM dosomething2.
+
     console.log('processing ...')
-    return "namaste javascript !!!";
+    return res +1 //FULLFILLES the promise , JUMP TO GEC
 }
 
-const anything = dosomething()
-
-anything
-.then((anyThing)=>console.log(anyThing));
-
-for(let i=0;i<10000;i++){
-    let s=i+i
+async function dosomething2(){ //<== dosomething2 execution starts syncronusly
+    for(let i=0;i<10;i++){
+        let s=i+i
+    }
+    console.log('processing2 ...')
+    const res = dosomething3(); // JUMP TO dosomething3 function.
+    // CAME FROM dosomething3.
+    console.log('------')
+    console.log(res) //FULLFILLED promise
+ 
+    await res  //encounters a promise, so it suspends and JUMP TO dosomething.
+        // <== came back after main block was executed.
+    console.log('------')
+    console.log(res) // FULLFILLED promise
+    return res + 1; //  FULLFILLES the  promise, JUMP TO dosomething.
 }
-console.log('main loop end')
+async function dosomething3(){ //<== dosomething3 execution starts syncronusly
+    for(let i=0;i<10;i++){
+        let s=i+i
+    }
+    console.log("processing3 ...")
+    return 1;  // RETURN A PROMISE (FULLFILLED)
+} // ==> JUMP TO dosomething2.
 
-console.log('my block end')
+
