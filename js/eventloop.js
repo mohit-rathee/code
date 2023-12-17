@@ -3,10 +3,7 @@ setTimeout(
     0
 );
 async function important(){
-    fetch("https://google.com")
-    .then((txt)=>{
-            console.log('response arrived');
-        })
+    console.log('response arrived');
 }
 important();
 
