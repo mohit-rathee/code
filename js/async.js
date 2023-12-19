@@ -12,7 +12,6 @@ for(let i=0;i<10;i++){
 
 console.log('main loop end')
 
-const anything = dosomething() // ==> JUMP TO dosomething function.
 // STACK CALL IS EMPTY NOW, moving to dosomething2
 async function dosomething(){ // <== dosomething execution starts syncronusly
     for(let i=0;i<10;i++){
