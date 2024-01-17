@@ -1,3 +1,19 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 fn main(){
     let string1 = String::from("hello"); // s = "hello"
 
@@ -8,7 +24,7 @@ fn main(){
     
 } 
 
-fn `a takes_ownership(anything: `a String) -> `a String {
+fn takes_ownership(anything: String)-> String {
         // this will copy the string and return new string
         return anything
 }
