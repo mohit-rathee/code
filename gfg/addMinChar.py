@@ -18,7 +18,6 @@ def addMinChar(str1):
                     b-=1
                     d=True
                     continue
-                break
             if d:
                 print("palidrone found")
                 print(str1[:j+1])
