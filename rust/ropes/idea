@@ -1,0 +1,45 @@
+Text files are made of lines.
+But strings can be replaced with ropes.
+
+*NOTE:
+   1. The (rope) DS contains lenght of strings in leaf nodes.
+   2. Tree needs to be balanced. (may be like garbageColl.)
+   3. If possible len(string_in_leaf) should not be quantized.
+
+    Representation of File:
+            ROOT                  
+           /    \                 
+        Line1   (rope)            
+                /    \            
+             Line2  (rope)        
+                    /    \        
+                 Line3  (rope)    
+                        /    \    
+                      Line4  ...  
+
+* Lines are strings.
+
+--Initial-----------------------------
+
+   "The quick brown fox!\n"         
+           /        \               
+         "The"     (rope)           
+                   /    \           
+              "quick"  (rope)       
+                       /    \       
+                  "brown"  (rope)   
+                           /    \   
+                        "fox!"  "\n"
+
+--Change------------------------------
+
+   "The quick and lazy brown fox!\n"
+        /             \               
+      "The"           (rope)           
+       _______________/___  \           
+       |      (rope)     |   (rope)       
+       |     /     \     |    /    \     
+       |  "quick" (rope) |"brown"  (rope)
+       |         /   \   |        /    \   
+       |     "and" "lazy"|     "fox!"  "\n"
+       |_________________|
