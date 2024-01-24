@@ -38,8 +38,8 @@ local function worker (user_args)
         wifi_util:check()
     end
     local function run_cmd (device,check_cmd,ch_regex,connect_cmd,conn_regex)
-        spawn.easy_async(check_cmd,function (out)
         --spawn.easy_async(CMD,callback(stdout, stderr, reason, exit_code))
+        spawn.easy_async(check_cmd,function (out)
             ch_regex = string.format('%%s%s%%s',ch_regex)
             local connected = string.match(out:lower(),ch_regex)
             if connected then
@@ -60,7 +60,7 @@ local function worker (user_args)
         end)
     end
         --wifi_util:check("wifi",wifi_check,"connected")
-    function wifi_util:check()
+    function wifi_util:check(show_notification)
         local ch_cmd
         local ch_rgx
         if wifi_util.widget.text == " wifi " then
@@ -80,9 +80,18 @@ local function worker (user_args)
                     local connected = string.match(stdout:lower(),ch_rgx)
                     local result
                     if connected then
+                        naughty.notify({text="yes"})
                         result = "connected"
+                        if not show_notification then
+                            return true
+                        end
                     else
                         result = "not connected"
+                        naughty.notify({text="no"})
+                        result = "connected"
+                        if not show_notification then
+                            return false
+                        end
                     end
                     notification = naughty.notify {
                         title = wifi_util.widget.text ,
@@ -93,11 +102,17 @@ local function worker (user_args)
                 end)
     end
     function wifi_util:connect()
-        if wifi_util.widget.text == " wifi " then
-            run_cmd('wifi',wifi_check,"connected",wifi_connect,"successfully")
+        local is_conn = wifi_util:check(false)
+        if is_conn == true then
+            naughty.notify({text="Connected"})
         else
-            run_cmd('bluetooth',blutoth_check,"connected: yes",blutoth_connect,"successful")
+            naughty.notify({text="Not Connected"})
         end
+--        if wifi_util.widget.text == " wifi " then
+--            run_cmd('wifi',wifi_check,"connected",wifi_connect,"successfully")
+--        else
+--            run_cmd('bluetooth',blutoth_check,"connected: yes",blutoth_connect,"successful")
+--        end
     end
     wifi_util.widget:buttons(
             awful.util.table.join(
@@ -108,7 +123,7 @@ local function worker (user_args)
             )
     )
 
-    wifi_util.widget:connect_signal("mouse::enter", function() wifi_util:check() end)
+    wifi_util.widget:connect_signal("mouse::enter", function() wifi_util:check(true) end)
     wifi_util.widget:connect_signal("mouse::leave", function() naughty.destroy(notification) end)
     return wifi_util.widget
 end
