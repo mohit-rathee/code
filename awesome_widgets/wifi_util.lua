@@ -1,10 +1,12 @@
 local awful = require("awful")
 local wibox = require("wibox")
--- local watch = require("awful.widget.watch")
+local watch = require("awful.widget.watch")
 local spawn = require("awful.spawn")
 -- local gfs = require("gears.filesystem")
 local naughty = require("naughty")
 -- local beautiful = require("beautiful")
+
+local notification
 
 local wifi_util = {}
 local wifi_check = "nmcli g"
@@ -15,18 +17,29 @@ local blutoth_check = "bluetoothctl info B4:9A:95:DF:F0:6D"
 local blutoth_ch_regex = "connected: yes"
 local blutoth_connect = "bluetoothctl connect B4:9A:95:DF:F0:6D"
 
+local function run_cmd (device,connect_cmd,conn_regex)
+      --spawn.easy_async(CMD,callback(stdout, stderr, reason, exit_code))
+        spawn.easy_async(connect_cmd,function(conn_out)
+            conn_regex = string.format('%s',conn_regex,'%s')
+            local connected = string.match(conn_out:lower(),conn_regex)
+            if connected then
+                naughty.notify({ text = "connected with GalaxyF23"})
+            else
+                naughty.notify({ text = "can't find device"})
+            end
+        end)
+end
 local function worker (user_args)
     local args = user_args or {}
     local text
     if args.mode == " wifi " or args.mode == " bluetooth " then
         text = args.mode
     else
-        text = " wifi " -- default
+        text = " wifi " --default
     end
     wifi_util.widget = wibox.widget.textbox()
     wifi_util.widget.text = text
 
-    local notification
 
     function wifi_util:toggle()
         naughty.destroy(notification)
@@ -35,41 +48,23 @@ local function worker (user_args)
         else
             wifi_util.widget.text = " bluetooth "
         end
-        wifi_util:check()
+        wifi_util:check(true)
     end
-    local function run_cmd (device,check_cmd,ch_regex,connect_cmd,conn_regex)
-        --spawn.easy_async(CMD,callback(stdout, stderr, reason, exit_code))
-        spawn.easy_async(check_cmd,function (out)
-            ch_regex = string.format('%%s%s%%s',ch_regex)
-            local connected = string.match(out:lower(),ch_regex)
-            if connected then
-                naughty.notify({ text = string.format("%s connected",device)})
-            else
-                naughty.notify({ text = "not connected"})
-                naughty.notify({ text = string.format("trying out with %s",device)})
-                spawn.easy_async(connect_cmd,function(conn_out)
-                    conn_regex = string.format('%s',conn_regex,'%s')
-                    connected = string.match(conn_out:lower(),conn_regex)
-                    if connected then
-                        naughty.notify({ text = "connected with GalaxyF23"})
-                    else
-                        naughty.notify({ text = "can't find device"})
-                    end
-                end)
-            end
-        end)
-    end
-        --wifi_util:check("wifi",wifi_check,"connected")
-    function wifi_util:check(show_notification)
+    --wifi_util:check("wifi",wifi_check,"connected")
+    function wifi_util:check(show_notification,callback)
         local ch_cmd
         local ch_rgx
-        if wifi_util.widget.text == " wifi " then
+        local device = wifi_util.widget.text
+        if device == " wifi " then
             ch_cmd = wifi_check
             ch_rgx = wifi_ch_regex
         else
             ch_cmd = blutoth_check
             ch_rgx = blutoth_ch_regex
         end
+--      watch("ls", 2, function (out)
+--        naughty.notify({text="hd"})
+--      end,wifi_util)
         awful.spawn.easy_async(ch_cmd,
                 function(stdout, _, _, _)
                     if notification then
@@ -80,17 +75,14 @@ local function worker (user_args)
                     local connected = string.match(stdout:lower(),ch_rgx)
                     local result
                     if connected then
-                        naughty.notify({text="yes"})
                         result = "connected"
                         if not show_notification then
-                            return true
+                            callback(device,true)
                         end
                     else
                         result = "not connected"
-                        naughty.notify({text="no"})
-                        result = "connected"
                         if not show_notification then
-                            return false
+                            callback(device,false)
                         end
                     end
                     notification = naughty.notify {
@@ -102,17 +94,15 @@ local function worker (user_args)
                 end)
     end
     function wifi_util:connect()
-        local is_conn = wifi_util:check(false)
-        if is_conn == true then
-            naughty.notify({text="Connected"})
-        else
-            naughty.notify({text="Not Connected"})
-        end
---        if wifi_util.widget.text == " wifi " then
---            run_cmd('wifi',wifi_check,"connected",wifi_connect,"successfully")
---        else
---            run_cmd('bluetooth',blutoth_check,"connected: yes",blutoth_connect,"successful")
---        end
+        wifi_util:check(false,function (device,is_conn)
+            if not is_conn then
+                if wifi_util.widget.text == " wifi " then
+                    run_cmd(device,wifi_connect,"successfully")
+                else
+                    run_cmd(device,blutoth_connect,"successful")
+                end
+            end
+        end)
     end
     wifi_util.widget:buttons(
             awful.util.table.join(
