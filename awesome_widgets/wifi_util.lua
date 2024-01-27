@@ -20,10 +20,11 @@ local blutoth_connect = "bluetoothctl connect B4:9A:95:DF:F0:6D"
 local function run_cmd (device,connect_cmd,conn_regex)
       --spawn.easy_async(CMD,callback(stdout, stderr, reason, exit_code))
         spawn.easy_async(connect_cmd,function(conn_out)
+            naughty.notify({text="trying to connect"})
             conn_regex = string.format('%s',conn_regex,'%s')
             local connected = string.match(conn_out:lower(),conn_regex)
             if connected then
-                naughty.notify({ text = "connected with GalaxyF23"})
+                naughty.notify({ text = "connected with device"})
             else
                 naughty.notify({ text = "can't find device"})
             end
@@ -96,7 +97,7 @@ local function worker (user_args)
     function wifi_util:connect()
         wifi_util:check(false,function (device,is_conn)
             if not is_conn then
-                if wifi_util.widget.text == " wifi " then
+                if device == " wifi " then
                     run_cmd(device,wifi_connect,"successfully")
                 else
                     run_cmd(device,blutoth_connect,"successful")
