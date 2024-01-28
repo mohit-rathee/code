@@ -19,8 +19,8 @@ local blutoth_connect = "bluetoothctl connect B4:9A:95:DF:F0:6D"
 
 local function run_cmd (device,connect_cmd,conn_regex)
       --spawn.easy_async(CMD,callback(stdout, stderr, reason, exit_code))
+        naughty.notify({text="trying to connect"})
         spawn.easy_async(connect_cmd,function(conn_out)
-            naughty.notify({text="trying to connect"})
             conn_regex = string.format('%s',conn_regex,'%s')
             local connected = string.match(conn_out:lower(),conn_regex)
             if connected then
