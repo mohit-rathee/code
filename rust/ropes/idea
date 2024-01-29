@@ -43,3 +43,11 @@ But strings can be replaced with ropes.
        |         /   \   |        /    \   
        |     "and" "lazy"|     "fox!"  "\n"
        |_________________|
+
+
+Approaches to handel construction of ropes.
+
+1.  when adding text in Insert mode you can either add the text at
+    end or edit something if changes inside the strings occurs.
+2.  Detect changes in whole file and map the changes to ropes.
+
