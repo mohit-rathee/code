@@ -11,7 +11,7 @@ local notification
 local wifi_util = {}
 local wifi_check = "nmcli g"
 local wifi_ch_regex = "connected"
-local wifi_connect = "nmcli d wifi connect GalaxyF23"
+local wifi_connect = "nmcli dwificonnect GalaxyF23"
 
 local blutoth_check = "bluetoothctl info B4:9A:95:DF:F0:6D"
 local blutoth_ch_regex = "connected: yes"
@@ -33,10 +33,10 @@ end
 local function worker (user_args)
     local args = user_args or {}
     local text
-    if args.mode == " wifi " or args.mode == " bluetooth " then
+    if args.mode == "wifi" or args.mode == "bluetooth" then
         text = args.mode
     else
-        text = " wifi " --default
+        text = "wifi" --default
     end
     wifi_util.widget = wibox.widget.textbox()
     wifi_util.widget.text = text
@@ -44,10 +44,10 @@ local function worker (user_args)
 
     function wifi_util:toggle()
         naughty.destroy(notification)
-        if wifi_util.widget.text == " bluetooth " then
-            wifi_util.widget.text = " wifi "
+        if wifi_util.widget.text == "bluetooth" then
+            wifi_util.widget.text = "wifi"
         else
-            wifi_util.widget.text = " bluetooth "
+            wifi_util.widget.text = "bluetooth"
         end
         wifi_util:check(true)
     end
@@ -56,14 +56,14 @@ local function worker (user_args)
         local ch_cmd
         local ch_rgx
         local device = wifi_util.widget.text
-        if device == " wifi " then
+        if device == "wifi" then
             ch_cmd = wifi_check
             ch_rgx = wifi_ch_regex
         else
             ch_cmd = blutoth_check
             ch_rgx = blutoth_ch_regex
         end
---      watch("ls", 2, function (out)
+--      local watcher = watch("ls", 2, function ()
 --        naughty.notify({text="hd"})
 --      end,wifi_util)
         awful.spawn.easy_async(ch_cmd,
@@ -97,7 +97,7 @@ local function worker (user_args)
     function wifi_util:connect()
         wifi_util:check(false,function (device,is_conn)
             if not is_conn then
-                if device == " wifi " then
+                if device == "wifi" then
                     run_cmd(device,wifi_connect,"successfully")
                 else
                     run_cmd(device,blutoth_connect,"successful")
