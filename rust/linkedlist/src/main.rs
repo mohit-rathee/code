@@ -17,12 +17,6 @@ impl Node {
             None
         }
     }
-//    fn next(&self) -> Option<&Box<Node>> {
-//        match &self.next{
-//            Some(node) => Some(node),
-//            None => None
-//        }
-//    }
 }
 
 impl List {
@@ -47,8 +41,8 @@ impl List {
     }
     fn append (&mut self,num:i32) {
         match self.head.take(){
-            Some(node)=>{
-                let new_node = Node::new(Some(num),Some(node));
+            Some(head)=>{
+                let new_node = Node::new(Some(num),Some(head));
                 self.head = new_node;
                 self.len += 1;
             },
@@ -56,6 +50,18 @@ impl List {
                 let new_node = Node::new(Some(num),None);
                 self.head = new_node;
                 self.len = 1;
+            }
+        }
+    }
+    fn pop (&mut self) {
+        match self.head.take(){
+            Some(head)=>{
+                self.head = head.next;
+                self.len -= 1;
+            },
+            None => {
+                self.head = None;
+                self.len = 0;
             }
         }
     }
@@ -76,8 +82,13 @@ fn main() {
                 break;
             }
         };
-        println!("{} added.",user_input);
-        list.append(user_input);
+        if user_input == 0 {
+            println!("removed the head.");
+            list.pop();
+        }else{
+            println!("{} added.",user_input);
+            list.append(user_input);
+        }
     }
     list.print();
 }
