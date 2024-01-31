@@ -4,7 +4,8 @@ use std::io;
 struct Node {
     data: i32,
     next: Option<Box<Node>>,
-}#[derive(Debug)]
+}
+#[derive(Debug)]
 struct List {
     len: i32,
     head: Option<Box<Node>>,
@@ -40,6 +41,9 @@ impl List {
         }
     }
     fn append (&mut self,num:i32) {
+        let mut x = self.head.as_mut();
+        let y = x.take();
+        println!("{:?}",y);
         match self.head.take(){
             Some(head)=>{
                 let new_node = Node::new(Some(num),Some(head));

@@ -1,21 +1,37 @@
-struct Ropes {
-    left :String,
-    right :String
+use std::io::{self};
+
+enum Node {
+    Node(Box<Rope>),
+    End(String)
+}
+struct Rope {
+    len : i32,
+    left :Option<Node>,
+    right :Option<Node>
 }
 
-impl Ropes {
-    fn new(left:String,right:String) -> Ropes{
-        Ropes{left,right}
-    }
-    fn print(&self){
-        println!("{}",self.left);
-        println!("{}",self.right);
+impl Rope {
+    fn new() -> Rope {
+        Rope{left:None,right:None,len:0}
     }
 }
+
 
 fn main() {
-    let left = String::from("A");
-    let right= String::from("B");
-    let my_ropes = Ropes::new(left,right);
-    my_ropes.print();
+    let main_rope = Rope::new();
+    loop {
+        let mut buffer = String::new();
+
+        io::stdin().read_line(&mut buffer).expect("Error reading input");
+
+        let trimmed_input = buffer.trim();
+
+        if trimmed_input == "q" {
+            println!("Exiting the loop.");
+            break;
+        }
+
+        println!("You entered: {}", trimmed_input);
+    }
 }
+
