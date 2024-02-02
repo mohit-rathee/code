@@ -14,6 +14,23 @@ impl Rope {
     fn new() -> Rope {
         Rope{left:None,right:None,len:0}
     }
+    fn append(&mut self,str:String) {
+
+        let head = self;
+        loop{
+            if let Some(x) = head.left.take() {
+                if let Node::End(y) = x {
+                    println!("{}",y);
+                }
+            };
+            if let Some(x) = head.right {
+                if let Node::End(y) = x {
+                    println!("{}",y);
+                }
+            };
+        }
+        
+    }
 }
 
 
