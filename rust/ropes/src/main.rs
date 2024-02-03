@@ -23,7 +23,7 @@ impl Rope {
                     println!("{}",y);
                 }
             };
-            if let Some(x) = head.right {
+            if let Some(x) = head.right.take() {
                 if let Node::End(y) = x {
                     println!("{}",y);
                 }
