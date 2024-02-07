@@ -1,6 +1,6 @@
 local awful = require("awful")
 local wibox = require("wibox")
-local watch = require("awful.widget.watch")
+--local watch = require("awful.widget.watch")
 local spawn = require("awful.spawn")
 -- local gfs = require("gears.filesystem")
 local naughty = require("naughty")
@@ -11,7 +11,7 @@ local notification
 local wifi_util = {}
 local wifi_check = "nmcli g"
 local wifi_ch_regex = "connected"
-local wifi_connect = "nmcli dwificonnect GalaxyF23"
+local wifi_connect = "nmcli d wifi connect GalaxyF23"
 
 local blutoth_check = "bluetoothctl info B4:9A:95:DF:F0:6D"
 local blutoth_ch_regex = "connected: yes"
