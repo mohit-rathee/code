@@ -1,8 +1,6 @@
 web-chat
 react/node_modules
-c-fun/test
 c-fun/PythonicList/build
-neovim_plugins/
 
 #Rust projects
 rust/bbst/target

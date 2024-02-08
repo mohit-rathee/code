@@ -1,6 +1,3 @@
 [submodule "PythonicList"]
 	path = PythonicList
 	url = https://github.com/mohit-rathee/PythonicList
-[submodule "rust/guessing_game"]
-	path = rust/guessing_game
-	url = https://github.com/mohit-rathee/guessing_game
