@@ -1,0 +1,22 @@
+
+local ui = {}
+
+local create_window = function ()
+    --vim.api.nvim_create_namespace('Explorer')
+    local buffer_id = vim.fn.bufnr("Explorer", true) -- is_existing
+    print(buffer_id)
+    if buffer_id == -1 then
+        buffer_id = vim.api.nvim_create_buf(true, true) -- create one if not
+    end
+    vim.api.nvim_open_win(
+        buffer_id,
+        true,
+        {relative="cursor",anchor="NW", row=3, col=3, width=12, height=3}
+    )
+    vim.fn.bufnr()
+    vim.api.nvim_buf_set_name(buffer_id,'Explorer')
+end
+
+ui.create_window=create_window
+
+return ui
