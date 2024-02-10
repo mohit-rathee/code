@@ -1,27 +1,21 @@
 def numberOfPath (n, k, arr):
-    counter=[0]
-    dp = [[0]*n]*n
-    print(dp)
-    def recurse(sum,x,y):
-        sum+=arr[x][y]
-        if x+y+2==2*n:
-            if sum==k:
-                counter[0]+=1
-            return
-        if sum>k:
-            return
-        if x<n-1:
-            recurse(sum,x+1,y)
-        if y<n-1:
-            recurse(sum,x,y+1)
-
-    recurse(0,0,0)
-    print(counter[0])
-
+    dp=[[[-1 for _ in range(k+1)]for _ in range(n+1)]for _ in range(n+1)]
+    def util(i,j,k):
+        if i==n-1 and j==n-1 and k==arr[i][j]:
+            return 1
+        if i>=n or j>=n or k<0:
+            return 0
+        if dp[i][j][k]!=-1:
+            return dp[i][j][k]
+        down=util(i+1,j,k-arr[i][j])
+        right=util(i,j+1,k-arr[i][j])
+        dp[i][j][k]=down+right
+        return dp[i][j][k]
+    util(0,0,k)
+    print(dp[0][0][k])
 Arr = [
     [1,2,3],
     [2,3,4],
     [3,4,5],
 ]
-print(Arr)
 numberOfPath(3,15,Arr)
