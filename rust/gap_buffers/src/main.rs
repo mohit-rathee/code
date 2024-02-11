@@ -33,7 +33,19 @@ impl Node {
         }
         self.gap_start=pos;
     }
-
+    fn insert(&mut self,pos:usize,string:&str){
+        println!("{}",pos);
+        if pos==self.buffer.len()-self.gap_size{
+            self.buffer.extend(string.chars());
+        }else{
+            self.point_cursor(pos);
+            for (i,char_value) in string.chars().enumerate(){
+                self.buffer[self.gap_start+i]=char_value;
+            }
+            self.gap_start+=string.len();
+            self.gap_size-=string.len();
+        }
+    }
     fn print(&self){
         println!("{}",self.gap_start);
         print!("==> ");
@@ -54,8 +66,10 @@ impl Node {
 fn main() {
     let mut x = Node::init("hello");
     x.print();
-    x.point_cursor(100);
+    x.insert(5,"ld!");
     x.print();
-    x.point_cursor(3);
+    x.insert(5," wor");
+    x.print();
+    x.insert(5,",");
     x.print();
 }
