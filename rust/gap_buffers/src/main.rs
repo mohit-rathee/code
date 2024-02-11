@@ -64,21 +64,21 @@ impl Node {
         }
     }
     fn replace(&mut self,pos:usize,string:&str){
-        if pos+string.len()>self.buffer.len()-self.gap_size{return}
-        if pos<self.gap_start && pos+string.len()>self.gap_start{
-            for (i,char_value) in string.chars().take(self.gap_start-pos).enumerate(){
+        let gap_size = self.gap_size;
+        let gap_start = self.gap_start;
+        let gap_end = gap_start+gap_size;
+        let rep_end = pos+string.len();
+        if rep_end>self.buffer.len()-gap_size{return}
+        let to_replace_from_left = (gap_start-pos).min(string.len());
+        let to_replace_from_right = string.len()-to_replace_from_left;
+        if to_replace_from_left > 0{
+            for (i,char_value) in string.chars().take(to_replace_from_left).enumerate(){
                 self.buffer[pos+i]=char_value;
             }
-            for (i,char_value) in string.chars().skip(self.gap_start-pos).enumerate(){
-                self.buffer[self.gap_start+self.gap_size+i]=char_value;
-            }
-        }else if pos<self.gap_start{
-            for (i,char_value) in string.chars().enumerate(){
-                self.buffer[pos+i]=char_value;
-            }
-        }else{
-            for (i,char_value) in string.chars().enumerate(){
-                self.buffer[self.gap_start+self.gap_size+i]=char_value;
+        }
+        if to_replace_from_right > 0{
+            for (i,char_value) in string.chars().skip(to_replace_from_left).enumerate(){
+                self.buffer[gap_end+i]=char_value;
             }
         }
     }
@@ -87,7 +87,7 @@ impl Node {
         for i in 0..self.gap_start {
             print!("{}",self.buffer[i]);
         }
-        //print!("[_{}_]",self.gap_size);
+        print!("[_{}_]",self.gap_size);
         for i in (self.gap_start+self.gap_size)..self.buffer.len() {
             print!("{}",self.buffer[i]);
         }
@@ -112,6 +112,6 @@ fn main() {
     x.print();
     x.delete(2,3);
     x.print();
-    x.replace(0,"HURREY");
+    x.replace(0,"HELLO");
     x.print();
 }
