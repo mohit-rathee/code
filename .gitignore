@@ -4,6 +4,7 @@ c-fun/PythonicList/build
 
 #Rust projects
 rust/bbst/target
+rust/gap_buffers/target
 rust/enums/target
 rust/fibonacci_number/target
 rust/generic_trait_lifetime/target
