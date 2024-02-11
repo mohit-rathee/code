@@ -69,13 +69,18 @@ impl Node {
         let gap_end = gap_start+gap_size;
         let rep_end = pos+string.len();
         if rep_end>self.buffer.len()-gap_size{return}
-        let to_replace_from_left = (gap_start-pos).min(string.len());
-        let to_replace_from_right = string.len()-to_replace_from_left;
+        let mut to_replace_from_left=0;
+        if gap_start>pos{
+            to_replace_from_left = (gap_start-pos).min(string.len());
+        }
         if to_replace_from_left > 0{
             for (i,char_value) in string.chars().take(to_replace_from_left).enumerate(){
                 self.buffer[pos+i]=char_value;
             }
         }
+        //println!("left->{}",to_replace_from_left);
+        let to_replace_from_right = string.len()-to_replace_from_left;
+        //println!("right->{}",to_replace_from_right);
         if to_replace_from_right > 0{
             for (i,char_value) in string.chars().skip(to_replace_from_left).enumerate(){
                 self.buffer[gap_end+i]=char_value;
@@ -104,7 +109,7 @@ fn main() {
     x.print();
     x.insert(5," wor");
     x.print();
-    x.insert(5,",");
+    x.insert(10,",");
     x.print();
     x.delete(2,2);
     x.print();
@@ -113,5 +118,9 @@ fn main() {
     x.delete(2,3);
     x.print();
     x.replace(0,"HELLO");
+    x.print();
+    x.replace(1,"I");
+    x.print();
+    x.replace(2,"xyz");
     x.print();
 }
