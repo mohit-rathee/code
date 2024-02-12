@@ -36,34 +36,39 @@ impl Node {
             self.right_shift(pos,gap_end);
         }
     }
+    fn add_gap(&self,string:&mut String) -> usize {
+        //new_gap should reset to normal.
+        let new_gap = 6-self.gap_size;
+        if new_gap > 0{
+            for _ in 0..new_gap{
+                string.push(' ');
+            }
+            return new_gap
+        }
+        return 0
+    }
     fn insert(&mut self,pos:usize,string:&str){
         if pos==self.buffer.len()-self.gap_size{
             self.buffer.extend(string.chars());
-        }else{
-            self.point_cursor(pos);
-            if string.len()>self.gap_size{
-                //insert vec<string+new_gap>
-                //new_gap should reset to normal.
-                if self.gap_size<6{
-                    let new_gap = 6-self.gap_size;
-                    let mut new_string = String::from(string);
-                    if new_gap > 0{
-                        for _ in 0..new_gap{
-                            new_string.push(' ');
-                        }
-                    }
-                    self.gap_size+=new_gap;
-                }
-                self.buffer.splice(self.gap_start..self.gap_start,string.chars());
-                self.gap_start+=string.len();
-            }else{
-                for (i,char_value) in string.chars().enumerate(){
-                    self.buffer[self.gap_start+i]=char_value;
-                }
-                self.gap_start+=string.len();
-                self.gap_size-=string.len();
-            }
+            return
         }
+        self.point_cursor(pos);
+        if string.len()>self.gap_size{
+            //insert vec<string+new_gap>
+            let mut new_string = String::from(string);
+            if self.gap_size<6{
+                self.gap_size+=self.add_gap(&mut new_string);
+            }
+            self.buffer.splice(self.gap_start..self.gap_start,new_string.chars());
+            self.gap_start+=string.len();
+        }else{
+            for (i,char_value) in string.chars().enumerate(){
+                self.buffer[self.gap_start+i]=char_value;
+            }
+            self.gap_start+=string.len();
+            self.gap_size-=string.len();
+        }
+        
     }
     fn delete(&mut self,pos:usize,len:usize){
         let gap_end = self.gap_size+self.gap_start;
@@ -105,7 +110,11 @@ impl Node {
         for i in 0..self.gap_start {
             print!("{}",self.buffer[i]);
         }
-        print!("[_{}_]",self.gap_size);
+        print!("[{}",self.gap_size);
+        //for i in self.gap_start..(self.gap_start+self.gap_size) {
+        //    print!("{}",self.buffer[i]);
+        //}
+        print!("]");
         for i in (self.gap_start+self.gap_size)..self.buffer.len() {
             print!("{}",self.buffer[i]);
         }
@@ -117,7 +126,6 @@ impl Node {
 
 fn main() {
     let mut x = Node::init("hello");
-    x.print();
     x.insert(5,"ld!");
     x.print();
     x.insert(5," wor");
@@ -131,6 +139,7 @@ fn main() {
     x.delete(2,3);
     x.print();
     x.insert(4,"nothing");
+    x.print();
     x.insert(3,"HELLO SIR!!!");
     x.print();
     x.replace(1,"I");
@@ -138,6 +147,9 @@ fn main() {
     x.replace(2,"xyz");
     x.print();
     x.insert(15,"xyzabc");
+    x.print();
     x.insert(0,"M");
+    x.print();
+    x.delete(5,8);
     x.print();
 }
