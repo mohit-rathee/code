@@ -1,5 +1,3 @@
-use std::usize;
-
 #[derive(Debug)]
 struct Node {
     buffer: Vec<char>,
@@ -10,11 +8,9 @@ struct Node {
 impl Node {
     fn init(bufstr:&str) -> Node {
         let mut buffer:Vec<char> = bufstr.chars().collect();
-        buffer.extend(std::iter::repeat(' ').take(50));
+        buffer.extend(std::iter::repeat(' ').take(6));
         Node{
-            buffer,
-            gap_start:bufstr.len(),
-            gap_size:50
+            buffer, gap_start:bufstr.len(), gap_size:6
         }
 
     }
@@ -45,11 +41,28 @@ impl Node {
             self.buffer.extend(string.chars());
         }else{
             self.point_cursor(pos);
-            for (i,char_value) in string.chars().enumerate(){
-                self.buffer[self.gap_start+i]=char_value;
+            if string.len()>self.gap_size{
+                //insert vec<string+new_gap>
+                //new_gap should reset to normal.
+                if self.gap_size<6{
+                    let new_gap = 6-self.gap_size;
+                    let mut new_string = String::from(string);
+                    if new_gap > 0{
+                        for _ in 0..new_gap{
+                            new_string.push(' ');
+                        }
+                    }
+                    self.gap_size+=new_gap;
+                }
+                self.buffer.splice(self.gap_start..self.gap_start,string.chars());
+                self.gap_start+=string.len();
+            }else{
+                for (i,char_value) in string.chars().enumerate(){
+                    self.buffer[self.gap_start+i]=char_value;
+                }
+                self.gap_start+=string.len();
+                self.gap_size-=string.len();
             }
-            self.gap_start+=string.len();
-            self.gap_size-=string.len();
         }
     }
     fn delete(&mut self,pos:usize,len:usize){
@@ -117,10 +130,14 @@ fn main() {
     x.print();
     x.delete(2,3);
     x.print();
-    x.replace(0,"HELLO");
+    x.insert(4,"nothing");
+    x.insert(3,"HELLO SIR!!!");
     x.print();
     x.replace(1,"I");
     x.print();
     x.replace(2,"xyz");
+    x.print();
+    x.insert(15,"xyzabc");
+    x.insert(0,"M");
     x.print();
 }
