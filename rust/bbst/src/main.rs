@@ -1,64 +1,29 @@
-use std::cmp::Ordering;
 
-#[derive(Debug)]
-struct Node {
-    val: usize,
-    left: Option<Box<Node>>,
-    right: Option<Box<Node>>,
-}
-impl Node {
-    fn new(val: usize) -> Node {
-        Node {
-            val,
-            left: None,
-            right: None,
-        }
-    }
+struct Node<T> {
+    value: T,
+    height: isize,
+    left : Option<Box<Node<T>>>,
+    right: Option<Box<Node<T>>>,
 }
 
-struct BBST {
-    root: Option<Box<Node>>,
+struct Tree<T> {
+    root: Option<Box<Node<T>>>
 }
-impl BBST {
-    fn new(val: Option<usize>) -> BBST {
-        if let Some(value) = val {
-            BBST {
-                root: Some(Box::new(Node::new(value))),
-            }
-        } else {
-            BBST { root: None }
-        }
-    }
-    fn add(&mut self, val: usize) {
-        if let Some(_) = self.root {
-            self.insert(val);
-        } else {
-            self.root = Some(Box::new(Node {
-                val,
-                left: None,
-                right: None,
-            }));
-        }
-    }
 
-    fn insert(&mut self, val: usize) -> bool {
-        let mut curr_tree = &mut self.root;
-        while let Some(curr_node) = curr_tree {
-            match curr_node.val.cmp(&val) {
-                Ordering::Less => curr_tree = &mut curr_node.right,
-                Ordering::Equal => {
-                    return false;
-                }
-                Ordering::Greater => curr_tree = &mut curr_node.left,
+impl<T:Ord> Tree<T> {
+    fn new(val:Option<T>) -> Tree<T> {
+        match val{
+            Some(value) => Tree{root:
+                Some(Box::new(Node{value,height:1,left:None,right:None}))
+            },
+            None => Tree{
+                root: None
             }
         }
-        *curr_tree = Some(Box::new(Node{val,right:None,left:None}));
-        true
     }
 }
+
 fn main() {
-    let mut my_bbst = BBST::new(None);
-    my_bbst.add(30);
-    my_bbst.add(10);
-    my_bbst.add(40);
+    let tree:Tree<usize> = Tree::new(Some(50));
+    println!("tree is :{}",tree.root.unwrap().value);
 }
