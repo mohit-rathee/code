@@ -130,7 +130,7 @@ The constructed AVL Tree would be
 		/ \ 
 		20 40 
 		/ \  \ 
-	10 25 50
+	   10 25 50
 '''
 
 # Preorder Traversal 

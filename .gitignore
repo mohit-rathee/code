@@ -4,6 +4,7 @@ c-fun/PythonicList/build
 
 #Rust projects
 rust/bbst/target
+rust/implementation/target
 rust/gap_buffers/target
 rust/enums/target
 rust/fibonacci_number/target
@@ -23,3 +24,6 @@ rust/restraunt/target
 rust/ropes/target
 rust/slices/target
 rust/strings/target
+
+#python
+python/result_automation/venv
