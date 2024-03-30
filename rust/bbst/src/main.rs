@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 use std::fmt::Debug;
 
+=======
+>>>>>>> 9e2bd098ba318c3720779271a85a541acb4fe8cd
 type Link<T> = Option<Box<Node<T>>>;
 struct Node<T> {
     value: T,
@@ -8,9 +11,15 @@ struct Node<T> {
     right: Link<T>,
 }
 pub struct AVLTree<T> {
+<<<<<<< HEAD
     root: Link<T>, }
 
 impl<T: Ord+Clone+Debug> AVLTree<T> {
+=======
+    root: Link<T>,
+}
+impl<T: Ord+Clone> AVLTree<T> {
+>>>>>>> 9e2bd098ba318c3720779271a85a541acb4fe8cd
     pub fn new() -> Self {
         AVLTree { root: None }
     }
@@ -40,6 +49,7 @@ impl<T: Ord+Clone+Debug> AVLTree<T> {
         y
     }
     pub fn insert(&mut self, value: T) {
+<<<<<<< HEAD
         self.root = self.root.take().map(|node| self.insert_rec(Some(node), value)).flatten();
     }
     fn insert_rec(&self, node: Link<T>, value: T) -> Link<T> {
@@ -47,15 +57,30 @@ impl<T: Ord+Clone+Debug> AVLTree<T> {
         let mut node = match node {
             None => return Some(Box::new(Node {
                 value: value.clone(),
+=======
+        let new_root = self.root.take().map(|node| self.insert_rec(Some(node), value)).flatten();
+        self.root = new_root;    }
+    fn insert_rec(&self, node: Link<T>, value: T) -> Link<T> {
+        let new_val = value.clone();
+        let mut node = match node {
+            None => return Some(Box::new(Node {
+                value,
+>>>>>>> 9e2bd098ba318c3720779271a85a541acb4fe8cd
                 height: 1,
                 left: None,
                 right: None,
             })),
             Some(mut boxed_node) => {
                 if value < boxed_node.value {
+<<<<<<< HEAD
                     boxed_node.left = self.insert_rec(boxed_node.left, new_value);
                 } else if value > boxed_node.value {
                     boxed_node.right = self.insert_rec(boxed_node.right, new_value);
+=======
+                    boxed_node.left = self.insert_rec(boxed_node.left, new_val);
+                } else if value > boxed_node.value {
+                    boxed_node.right = self.insert_rec(boxed_node.right, new_val);
+>>>>>>> 9e2bd098ba318c3720779271a85a541acb4fe8cd
                 } else {
                     return Some(boxed_node); // Duplicates not allowed
                 }
@@ -93,4 +118,8 @@ fn main() {
     avl.insert(40);
     avl.insert(50);
     avl.insert(25);
+<<<<<<< HEAD
+=======
+    // Note: Printing is omitted for brevity. You can implement an in_order function similar to the BST for visualization.
+>>>>>>> 9e2bd098ba318c3720779271a85a541acb4fe8cd
 }

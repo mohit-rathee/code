@@ -5,10 +5,13 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 # Replace these with the actual URL and credentials
-credentials = [[1234,5678]]
 # Populate-- this when required.
 url = "https://result.mdurtk.in/postexam/result.aspx"
 path_loc = r"/home/Arch/downloads/results/new"
+credentials = [[1234,5678]] # Populate this when required.
+
+url = "https://result.mdurtk.in/postexam/result.aspx"
+path_loc = r"/home/Arch/"
 options = webdriver.ChromeOptions()
 driver_location = '/usr/bin/chromedriver'
 binary_location = '/usr/bin/google-chrome-stable'
