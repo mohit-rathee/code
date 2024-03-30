@@ -27,3 +27,4 @@ rust/strings/target
 
 #python
 python/result_automation/venv
+python/web-chat_stress_tester/venv
