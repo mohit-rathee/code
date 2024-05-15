@@ -1,12 +1,12 @@
 #[derive(Debug)]
-struct Node {
+pub struct Node {
     buffer: Vec<char>,
     gap_start: usize,
     gap_size : usize
 }
 
 impl Node {
-    fn init(bufstr:&str) -> Node {
+    pub fn init(bufstr:&str) -> Node {
         let mut buffer:Vec<char> = bufstr.chars().collect();
         buffer.extend(std::iter::repeat(' ').take(6));
         Node{
@@ -47,7 +47,7 @@ impl Node {
         }
         return 0
     }
-    fn insert(&mut self,pos:usize,string:&str){
+    pub fn insert(&mut self,pos:usize,string:&str){
         if pos==self.buffer.len()-self.gap_size{
             self.buffer.extend(string.chars());
             return
@@ -70,7 +70,7 @@ impl Node {
         }
         
     }
-    fn delete(&mut self,pos:usize,len:usize){
+    pub fn delete(&mut self,pos:usize,len:usize){
         let gap_end = self.gap_size+self.gap_start;
         if self.gap_start>pos{
             self.left_shift(pos+len,gap_end);
@@ -81,7 +81,7 @@ impl Node {
             self.gap_size+=len;
         }
     }
-    fn replace(&mut self,pos:usize,string:&str){
+    pub fn replace(&mut self,pos:usize,string:&str){
         let gap_size = self.gap_size;
         let gap_start = self.gap_start;
         let gap_end = gap_start+gap_size;
@@ -105,7 +105,7 @@ impl Node {
             }
         }
     }
-    fn print(&self){
+    pub fn print(&self){
         print!("==> ");
         for i in 0..self.gap_start {
             print!("{}",self.buffer[i]);
@@ -121,35 +121,4 @@ impl Node {
         println!();
 
     }
-}
-
-
-fn main() {
-    let mut x = Node::init("hello");
-    x.insert(5,"ld!");
-    x.print();
-    x.insert(5," wor");
-    x.print();
-    x.insert(10,",");
-    x.print();
-    x.delete(2,2);
-    x.print();
-    x.delete(5,2);
-    x.print();
-    x.delete(2,3);
-    x.print();
-    x.insert(4,"nothing");
-    x.print();
-    x.insert(3,"HELLO SIR!!!");
-    x.print();
-    x.replace(1,"I");
-    x.print();
-    x.replace(2,"xyz");
-    x.print();
-    x.insert(15,"xyzabc");
-    x.print();
-    x.insert(0,"M");
-    x.print();
-    x.delete(5,8);
-    x.print();
 }
