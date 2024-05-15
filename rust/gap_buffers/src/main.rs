@@ -1,17 +1,16 @@
 #[derive(Debug)]
-pub struct Node {
+pub struct Buffer {
     buffer: Vec<char>,
     gap_start: usize,
-    gap_size : usize
+    gap_size : usize,
+    length: usize
 }
 
-impl Node {
-    pub fn init(bufstr:&str) -> Node {
+impl Buffer {
+    pub fn init(bufstr:&str) -> Buffer {
         let mut buffer:Vec<char> = bufstr.chars().collect();
         buffer.extend(std::iter::repeat(' ').take(6));
-        Node{
-            buffer, gap_start:bufstr.len(), gap_size:6
-        }
+        Buffer{buffer, gap_start:bufstr.len(), gap_size:6, length:bufstr.len()}
 
     }
     fn left_shift(&mut self, pos:usize,gap_end:usize){
@@ -37,7 +36,7 @@ impl Node {
         }
     }
     fn add_gap(&self,string:&mut String) -> usize {
-        //new_gap should reset to normal.
+        // new_gap is added to the new_string
         let new_gap = 6-self.gap_size;
         if new_gap > 0{
             for _ in 0..new_gap{
@@ -48,8 +47,10 @@ impl Node {
         return 0
     }
     pub fn insert(&mut self,pos:usize,string:&str){
+        // Append if pos is end of buffer.
         if pos==self.buffer.len()-self.gap_size{
             self.buffer.extend(string.chars());
+            self.length+=string.len();
             return
         }
         self.point_cursor(pos);
@@ -59,6 +60,7 @@ impl Node {
             if self.gap_size<6{
                 self.gap_size+=self.add_gap(&mut new_string);
             }
+            //put new_string(string+new_gap) in place of gap_start
             self.buffer.splice(self.gap_start..self.gap_start,new_string.chars());
             self.gap_start+=string.len();
         }else{
@@ -68,18 +70,26 @@ impl Node {
             self.gap_start+=string.len();
             self.gap_size-=string.len();
         }
-        
+        self.length+=string.len();
     }
     pub fn delete(&mut self,pos:usize,len:usize){
         let gap_end = self.gap_size+self.gap_start;
         if self.gap_start>pos{
-            self.left_shift(pos+len,gap_end);
-            self.gap_start-=len;
-            self.gap_size+=len;
+            if self.gap_start<pos+len{
+                self.gap_start=pos; //expand gap to where we start delete
+                // len = left expansion + right_expansion
+                self.gap_size+=std::cmp::min(self.length,len);
+            }else{
+                self.left_shift(pos+len,gap_end);
+                self.gap_start-=len;
+                self.gap_size+=len;
+            }
         }else{
             self.right_shift(pos,gap_end);
-            self.gap_size+=len;
+            self.gap_size+=std::cmp::min(self.length,len);
         }
+        self.length-=std::cmp::min(self.length,len);
+
     }
     pub fn replace(&mut self,pos:usize,string:&str){
         let gap_size = self.gap_size;
@@ -119,6 +129,26 @@ impl Node {
             print!("{}",self.buffer[i]);
         }
         println!();
+        println!("length : {}",self.length);
 
     }
 }
+fn main() {
+    let mut x = Buffer::init("hello");
+    x.insert(5,"ld!");
+    x.insert(5," wor");
+    x.insert(10,",");
+    x.delete(2,2);
+    x.delete(5,2);
+    x.delete(2,3);
+    x.delete(0,7);
+    x.print();
+    x.insert(0,"hello world!");
+    x.print();
+    x.replace(0,"lksad");
+    x.delete(3,2);
+    x.print();
+    x.replace(0,"lksaddfasa");
+    x.print();
+}
+

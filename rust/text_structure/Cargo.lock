@@ -3,12 +3,12 @@
 version = 3
 
 [[package]]
-name = "bbst"
+name = "gap_buffers"
+version = "0.1.0"
+
+[[package]]
+name = "text_structure"
 version = "0.1.0"
 dependencies = [
  "gap_buffers",
 ]
-
-[[package]]
-name = "gap_buffers"
-version = "0.1.0"
