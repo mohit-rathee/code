@@ -142,13 +142,12 @@ fn main() {
     x.delete(5,2);
     x.delete(2,3);
     x.delete(0,7);
-    x.print();
     x.insert(0,"hello world!");
-    x.print();
     x.replace(0,"lksad");
     x.delete(3,2);
-    x.print();
     x.replace(0,"lksaddfasa");
+    x.insert(3,"boiboiboiboiboil");
+    x.insert(3,"a");
     x.print();
 }
 
