@@ -3,12 +3,5 @@
 version = 3
 
 [[package]]
-name = "gap_buffers"
+name = "gap_rope"
 version = "0.1.0"
-
-[[package]]
-name = "text_structure"
-version = "0.1.0"
-dependencies = [
- "gap_buffers",
-]
