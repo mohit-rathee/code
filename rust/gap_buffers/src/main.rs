@@ -116,37 +116,49 @@ impl Buffer {
         }
     }
     pub fn print(&self){
-        print!("==> ");
+        //print!("==> ");
         for i in 0..self.gap_start {
             print!("{}",self.buffer[i]);
         }
-        print!("[{}",self.gap_size);
+        //print!("[{}",self.gap_size);
         //for i in self.gap_start..(self.gap_start+self.gap_size) {
         //    print!("{}",self.buffer[i]);
         //}
-        print!("]");
+        //print!("]");
         for i in (self.gap_start+self.gap_size)..self.buffer.len() {
             print!("{}",self.buffer[i]);
         }
         println!();
-        println!("length : {}",self.length);
+        //println!("length : {}",self.length);
 
     }
 }
 fn main() {
     let mut x = Buffer::init("hello");
     x.insert(5,"ld!");
+    x.print();
     x.insert(5," wor");
+    x.print();
     x.insert(10,",");
+    x.print();
     x.delete(2,2);
+    x.print();
     x.delete(5,2);
+    x.print();
     x.delete(2,3);
+    x.print();
     x.delete(0,7);
+    x.print();
     x.insert(0,"hello world!");
+    x.print();
     x.replace(0,"lksad");
+    x.print();
     x.delete(3,2);
+    x.print();
     x.replace(0,"lksaddfasa");
+    x.print();
     x.insert(3,"boiboiboiboiboil");
+    x.print();
     x.insert(3,"a");
     x.print();
 }

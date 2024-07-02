@@ -13,9 +13,9 @@ local wifi_check = "nmcli g"
 local wifi_ch_regex = "connected"
 local wifi_connect = "nmcli d wifi connect GalaxyF23"
 
-local blutoth_check = "bluetoothctl info B4:9A:95:DF:F0:6D"
+local blutoth_check = "bluetoothctl info 74:D7:13:ED:10:00"
 local blutoth_ch_regex = "connected: yes"
-local blutoth_connect = "bluetoothctl connect B4:9A:95:DF:F0:6D"
+local blutoth_connect = "bluetoothctl connect 74:D7:13:ED:10:00"
 
 local function run_cmd (device,connect_cmd,conn_regex)
       --spawn.easy_async(CMD,callback(stdout, stderr, reason, exit_code))
