@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 
 interface ButtonProps {
   url: string;
@@ -7,11 +8,11 @@ interface ButtonProps {
 
 const Button: React.FC<ButtonProps> = ({ url, text }) => {
   return (
-    <a href={url} target="_self" rel="noopener noreferrer">
+    <Link href={url} target="_self" rel="noopener noreferrer">
       <button className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300">
         {text}
       </button>
-    </a>
+    </Link>
   );
 };
 
