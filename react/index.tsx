@@ -45,11 +45,11 @@ const Count =() => {
     return(
         <div> 
             <h2>Counter: {count}</h2>
-            <button onclick={e=>
+            <button onclick={_e=>
             {setCount(count+1);}
             }
             >+</button>
-            <button onclick={e=>
+            <button onclick={_e=>
             {setCount(count-1);}
             }
             >-</button>

@@ -1,6 +1,10 @@
 web-chat
-node_modules
 build
+
+# React and Next projects
+node_modules
+package-lock.json
+package.json
 
 #Rust projects
 target/
