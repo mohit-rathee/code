@@ -1,6 +1,6 @@
 "use client"
 import '../globals.css';
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useEffect} from 'react';
 import HomeTemplate from '../components/HomeTemplate'
 import Canvas from '../components/canvas'
 export default function Home() {
@@ -22,9 +22,12 @@ function Playground() {
         setStrokesState((prevStrokes) => [...prevStrokes,newStroke]);
     }, []);
 
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+
     return (
         <div className='w-full h-full flex-grow bg-gray-200 gap-5 p-5 flex items-center justify-center'>
             <Canvas
+                canvasRef={canvasRef}
                 setLocation={setLocation}
                 setStrokes={setStrokes}
             />
@@ -36,34 +39,18 @@ function Playground() {
     )
 }
 
-// Only be rendered once.
-
-//function Dot({ location, handleMouseDown }: any) {
-//    return (<div className={'absolute w-1 h-1 bg-black rounded-full'}
-//        style={{
-//            top: `${location.y}px`,
-//            left: `${location.x}px`,
-//        }}
-//        onMouseDown={handleMouseDown}
-//    />)
-//
-//}
 function Board({ location, strokes }: boardProp): JSX.Element {
     return (
-        <div className='w-1/3 h-full bg-sky-50 rounded-sm'>
-            <div className='text-center'>Dashboard</div>
-            <h2 className='py-10 px-5 border-2 border-gray-300'>
+        <div className='w-1/3 py-2 h-full flex flex-col bg-sky-50 rounded-sm'>
+            <div className='text-center  h-10'>Dashboard</div>
+            <h2 className='p-5 relative max-h-20 border-2 border-gray-300'>
                 x : {location.x}
                 <br />
                 y : {location.y}
             </h2>
-            <h2 className='py-10 px-5 border-2 border-gray-300'>
-                <ul>
-                    {strokes.map((_stroke, index) => (
-                        <li key={index}>{index+1} Stroke</li>
-                    ))}
-                </ul>
-            </h2>
+            <div className='flex-1 max-h-72 overflow-y-auto px-5 border-2 border-gray-300'>
+                {strokes.length+1} strokes
+            </div>
 
         </div>
     )
