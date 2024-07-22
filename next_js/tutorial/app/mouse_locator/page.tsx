@@ -1,6 +1,6 @@
 "use client"
 import '../globals.css';
-import { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import HomeTemplate from '../components/HomeTemplate'
 export default function Home() {
     return (
@@ -21,37 +21,39 @@ interface boardProp {
 
 function Playground() {
     const [location, setLocation] = useState<pointer_type>({ x: 0.0, y: 0.0 })
-    const handleMouseEvent = (event:any) => {
+    const handleMouseEvent = useCallback((event: React.MouseEvent) => {
         const newLocation = {
-          x: event.clientX,
-          y: event.clientY
+            x: event.clientX,
+            y: event.clientY,
         };
         setLocation(newLocation);
-      };
+    }, []); // Dependencies array is empty, so this callback will not change
 
     return (
         <div className='w-full h-full flex-grow bg-gray-200 gap-5 p-5 flex items-center justify-center'>
             <Sensor handleMouseMove={handleMouseEvent} />
             <Board location={location} />
-            <Dot location={location}/>
+            <Dot location={location} />
         </div>
     )
 }
 
-function Sensor({handleMouseMove}:any) {
-    console.log('i rerenderd')
+// Only be rendered once.
+const Sensor: React.FC<any> = React.memo(({ handleMouseMove }: any) => {
     return (
         <div className='w-2/3 h-full bg-white rounded-sm border-2 border-red-300'
-        onMouseMove={handleMouseMove}>
+            onMouseMove={handleMouseMove}>
         </div>
     )
-}
-function Dot({location}:any) {
-        return(<div className={'absolute w-1 h-1 bg-black rounded-full'}
-                style={{ 
-                        top: `${location.y}px`,
-                        left: `${location.x}px`,
-                }}/>)
+})
+Sensor.displayName = 'memoised sensor'
+
+function Dot({ location }: any) {
+    return (<div className={'absolute w-1 h-1 bg-black rounded-full'}
+        style={{
+            top: `${location.y}px`,
+            left: `${location.x}px`,
+        }} />)
 
 }
 function Board({ location }: boardProp): JSX.Element {
