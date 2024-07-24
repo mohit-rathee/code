@@ -3,12 +3,18 @@ interface pointer {
     y: number;
 }
 interface boardProp {
-    location: pointer;
     strokes: pointer[][];
+    undo: () => void;
 }
+interface strokeState {
+    []
+}
+type StrokeAction =
+    | { type: 'add'; payload: Stroke }
+    | { type: 'undo'};
+
 interface canvasProp {
     canvasRef: React.RefObject<HTMLCanvasElement>;
     setLocation: (Location: pointer) => void;
-    setStrokes: (strokes:pointer[]) => void;
-
+    addStrokes: (strokes: pointer[]) => void;
 }
