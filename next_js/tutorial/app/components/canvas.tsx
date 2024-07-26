@@ -1,7 +1,7 @@
 "use client";
-import React, { useCallback, useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 
-const Canvas: React.FC<any> = React.memo(({ canvasRef, addStrokes }: canvasProp) => {
+function Canvas ({ canvasRef, addStrokes }: canvasProp) {
     const [isDrawing, setIsDrawing] = useState<boolean>(false)
     const [currentStroke, setCurrentStroke] = useState<pointer[]>([])
     const [context, setContext] = useState<CanvasRenderingContext2D | null>(null);
@@ -22,7 +22,7 @@ const Canvas: React.FC<any> = React.memo(({ canvasRef, addStrokes }: canvasProp)
     }, [currentStroke, isDrawing]);
 
     // handleMouseDown
-    const startDrawing = useCallback((event: React.MouseEvent) => {
+    const startDrawing = (event: React.MouseEvent) => {
         const canvas = canvasRef.current
         const rect = canvas?.getBoundingClientRect() || { left: 0, top: 0 };
         const startingPoint = {
@@ -33,9 +33,10 @@ const Canvas: React.FC<any> = React.memo(({ canvasRef, addStrokes }: canvasProp)
         setCurrentStroke([startingPoint])
         context?.beginPath()
         context?.moveTo(startingPoint.x, startingPoint.y);
-    }, [context,canvasRef])
-    //function handleMouseEvent
-    const draw = useCallback((event: React.MouseEvent) => {
+    }
+
+    //function handleMouseMove
+    const draw = (event: React.MouseEvent) => {
         if (!context) return;
         const canvas = canvasRef.current
         const rect = canvas?.getBoundingClientRect() || { left: 0, top: 0 };
@@ -48,10 +49,10 @@ const Canvas: React.FC<any> = React.memo(({ canvasRef, addStrokes }: canvasProp)
             context.stroke();
             setCurrentStroke((currentStroke) => [...currentStroke, newPoint])
         }
-    }, [context, canvasRef])
+    }
 
     // handleMouseUp
-    const stopDrawing = useCallback((event: React.MouseEvent) => {
+    const stopDrawing = (event: React.MouseEvent) => {
         setIsDrawing(false)
         const canvas = canvasRef.current
         const rect = canvas?.getBoundingClientRect() || { left: 0, top: 0 };
@@ -64,20 +65,19 @@ const Canvas: React.FC<any> = React.memo(({ canvasRef, addStrokes }: canvasProp)
         context?.closePath();
         const newStroke = [...currentStrokeRef.current, stopingPoint]
         addStrokes(newStroke);
-    }, [context,addStrokes,canvasRef])
+    }
 
     return (
-        <NewCanvas
+        <CanvasDiv
             startDrawing={startDrawing}
             draw={draw}
             stopDrawing={stopDrawing}
             canvasRef={canvasRef}
         />
     )
-})
-Canvas.displayName = 'memoised_canvas'
+}
 
-const NewCanvas = React.memo(({ startDrawing, draw, stopDrawing, canvasRef }: any) => {
+const CanvasDiv = ({ startDrawing, draw, stopDrawing, canvasRef }: any) => {
     return (
         <canvas className='bg-white rounded-sm border-2 border-red-300'
             ref={canvasRef}
@@ -89,7 +89,6 @@ const NewCanvas = React.memo(({ startDrawing, draw, stopDrawing, canvasRef }: an
             height={550}
         />
     )
-})
-NewCanvas.displayName = 'new_canvas'
+}
 
 export default Canvas

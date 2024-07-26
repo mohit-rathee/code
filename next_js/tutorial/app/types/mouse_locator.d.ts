@@ -2,19 +2,24 @@ interface pointer {
     x: number;
     y: number;
 }
+type Stroke = pointer[];
+type Strokes = pointer[][];
 interface boardProp {
-    strokes: pointer[][];
+    strokes: stroke;
     undo: () => void;
+    redo: () => void;
 }
-interface strokeState {
-    []
-}
-type StrokeAction =
+type StrokeActionProp =
     | { type: 'add'; payload: Stroke }
-    | { type: 'undo'};
+    | { type: 'undo'}
+    | { type: 'redo'};
 
+type Action = {
+      ADD: 'add',
+      UNDO: 'undo',
+      REDO: 'redo'
+}
 interface canvasProp {
     canvasRef: React.RefObject<HTMLCanvasElement>;
-    setLocation: (Location: pointer) => void;
     addStrokes: (strokes: pointer[]) => void;
 }

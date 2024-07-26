@@ -1,10 +1,8 @@
 "use client"
 import '../globals.css';
-import React, { useState, useCallback, useRef, useEffect, useReducer } from 'react';
+import React, { useState, useRef, useEffect, useReducer } from 'react';
 import HomeTemplate from '../components/HomeTemplate'
 import Canvas from '../components/canvas'
-import { stat } from 'fs';
-import { deflate } from 'zlib';
 export default function Home() {
     return (
         <HomeTemplate
@@ -14,74 +12,89 @@ export default function Home() {
     );
 }
 
+const ACTION: Action = {
+    ADD: 'add',
+    UNDO: 'undo',
+    REDO: 'redo'
+}
+
+function redraw_canvas(canvas: HTMLCanvasElement, strokes: Strokes, drawUpto: number) {
+    const context = canvas.getContext('2d')
+    if (!context) return;
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < drawUpto; i++) {
+        const stroke = strokes[i]
+        context.beginPath();
+        context.moveTo(stroke[0].x, stroke[0].y);
+        stroke.forEach((point: pointer, index: number) => {
+            if (index > 0) {
+                context.lineTo(point.x, point.y);
+                context.stroke()
+            }
+        });
+    }
+    context.closePath()
+
+}
+
 function Playground() {
-    const [lastAction, setLastAction] = useState<String|null>(null);
-    function strokesReducer(state: pointer[][], action: StrokeActionProp) {
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [lastAction, setLastAction] = useState<String | null>(null);
+    const [drawUpto, setDrawUpto] = useState<number>(0)
+    function strokesReducer(state: Strokes, action: StrokeActionProp): Strokes {
         switch (action.type) {
-            case "add":
+            case ACTION.ADD:
                 setLastAction('add')
-                return [...state, action.payload]
-            case "undo":
+                return [...state.splice(0, drawUpto), action.payload]
+            case ACTION.UNDO:
                 setLastAction('undo')
-                if (state.length > 1) {
-                    return state.slice(0, -1)
-                } else {
-                    return []
-                }
+                setDrawUpto(Math.max(drawUpto - 1, 0))
+                return state
+            case ACTION.REDO:
+                setLastAction('redo')
+                setDrawUpto(Math.min(drawUpto + 1, state.length))
+                return state
             default:
                 return state
         }
 
     }
     const [strokes, dispatch_strokes] = useReducer(strokesReducer, [])
-    const addStroke = (newStroke: pointer[][]) => {
-        dispatch_strokes({ type: 'add', payload: newStroke })
-    }
-    function undo() {
-        dispatch_strokes({ type: 'undo' })
-    }
     useEffect(() => {
         // draw strokes
-        if (lastAction =="undo" && canvasRef.current) {
+        if ((lastAction == "undo" || lastAction == "redo") && canvasRef.current) {
             const canvas = canvasRef.current
-            const context = canvas.getContext('2d')
-            if (!context) return;
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            strokes.forEach((stroke: pointer[]) => {
-                context.beginPath();
-                context.moveTo(stroke[0].x, stroke[0].y);
-                stroke.forEach((point: pointer, index: number) => {
-                    if (index > 0) {
-                        context.lineTo(point.x, point.y);
-                        context.stroke()
-                    }
-                });
-            })
-            context.closePath()
+            redraw_canvas(canvas, strokes, drawUpto)
         }
-    }, [lastAction,strokes])
+    }, [lastAction, strokes, drawUpto])
+    useEffect(()=>{
+        setDrawUpto(strokes.length)
+    },[strokes])
 
-    const canvasRef = useRef<HTMLCanvasElement>(null);
     return (
         <div className='w-full h-full flex-grow bg-gray-200 gap-5 p-5 flex items-center justify-center'>
             <Canvas
                 canvasRef={canvasRef}
-                addStrokes={addStroke}
+                addStrokes={(newStroke: Stroke) => {
+                        dispatch_strokes({ type: 'add', payload: newStroke })
+                    }
+                }
             />
             <Board
-                strokes={strokes}
-                undo={undo}
+                strokes={drawUpto}
+                undo={() => dispatch_strokes({ type: 'undo' })}
+                redo={() => dispatch_strokes({ type: 'redo' })}
             />
         </div>
     )
 }
 
-function Board({ strokes, undo }: boardProp): JSX.Element {
+function Board({ strokes, undo, redo }: boardProp): JSX.Element {
     return (
         <div className='w-1/3 py-2 h-full flex flex-col bg-sky-50 rounded-sm'>
             <div className='text-center  h-10'>Dashboard</div>
             <div className='flex-1 max-h-72 overflow-y-auto px-5 border-2 border-gray-300'>
-                {strokes.length} strokes
+                {strokes} strokes
                 <br />
                 <button className='bg-blue-200 m-1 p-1 rounded-md border-1'
                     onClick={undo}
@@ -89,6 +102,7 @@ function Board({ strokes, undo }: boardProp): JSX.Element {
                     undo
                 </button>
                 <button className='bg-blue-200 m-1 p-1 rounded-md border-1'
+                    onClick={redo}
                 >
                     redo
                 </button>
