@@ -12,26 +12,30 @@ interface Layer {
     strokes: Stroke[];
     length: number;
 }
+
+interface stroke_pointer {
+    layer: number;
+    stroke: number;
+}
 type DrawingState = Layer[];
 
 interface boardProp {
     strokes: number;
-    drawUpto: number;
     undo: () => void;
     redo: () => void;
-    del: (index: number) => void;
+    // del: (index: number) => void;
 }
 type StrokeActionProp =
     | { type: 'add'; payload: Stroke }
     | { type: 'undo' }
     | { type: 'redo' }
-    | { type: 'delete'; payload: number };
+    // | { type: 'delete'; payload: number };
 
 type Action = {
     ADD: 'add',
     UNDO: 'undo',
     REDO: 'redo',
-    DELETE: 'delete'
+    // DELETE: 'delete'
 }
 interface canvasProp {
     canvasRef: React.RefObject<HTMLCanvasElement[]>;
