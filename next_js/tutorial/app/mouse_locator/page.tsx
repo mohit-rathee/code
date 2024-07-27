@@ -107,8 +107,8 @@ function Playground() {
                 setLastAction('redo')
                 const nextStrokeIndex = strokePointer.stroke + 1
                 const nextLayerIndex = strokePointer.layer + 1
-                const maxStroke =  layersStack[strokePointer.layer].strokes.length
-                const maxLayer =  layersStack.length - 1
+                const maxStroke = layersStack[strokePointer.layer].strokes.length
+                const maxLayer = layersStack.length - 1
                 // Already at newest change
                 if (nextStrokeIndex > maxStroke && nextLayerIndex < maxLayer) {
                     return state
@@ -117,18 +117,26 @@ function Playground() {
                 if (nextStrokeIndex > maxStroke) {
                     const nextLayer = layersStack[nextLayerIndex]
                     setStrokePointer({
-                        layer:nextLayerIndex,
-                        stroke:0
+                        layer: nextLayerIndex,
+                        stroke: 0
                     })
                     return nextLayer
+                } else{
+                    // redo current layer
+                    setStrokePointer({
+                        ...strokePointer,
+                        stroke: nextStrokeIndex
+                    })
+                    return state
+                }
+            default:
+                return state
             // case ACTION.DELETE:
             //     setLastAction('delete')
             //     setStrokePointer(Math.max(strokePointer - 1, 0))
             //     const new_state = { ...state }
             //     new_state.strokes.splice(action.payload - 1, 1)
             //     return new_state
-            default:
-                return state
         }
 
     }
