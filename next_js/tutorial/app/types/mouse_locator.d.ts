@@ -34,7 +34,6 @@ type Action = {
     DELETE: 'delete'
 }
 interface canvasProp {
-    layerStackRef: React.RefObject<HTMLDivElement>;
     canvasRef: React.RefObject<HTMLCanvasElement[]>;
     addStrokes: (strokes: pointer[]) => void;
     layersCount: number;

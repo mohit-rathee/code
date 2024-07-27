@@ -46,8 +46,7 @@ const initialLayerState: Layer = {
 };
 
 function Playground() {
-    const canvasRef = useRef<HTMLCanvasElement>([]);
-    const layerStackRef = useRef<HTMLDivElement>(null)
+    const canvasRef = useRef<HTMLCanvasElement[]>([]);
     const [lastAction, setLastAction] = useState<String | null>(null);
     const [drawUpto, setDrawUpto] = useState<number>(0)
     const [drawingStack, setDrawingStack] = useState<DrawingState>([])
@@ -110,21 +109,20 @@ function Playground() {
     console.log(layer.length)
     return (
         <div className='w-full h-full flex-grow bg-gray-200 gap-5 p-5 flex items-center justify-center'>
-            <Canvas
-                layersCount={drawingStack.length}
-                layerStackRef={layerStackRef}
-                canvasRef={canvasRef}
-                addStrokes={(newStroke: pointer[]) => {
-                    dispatch({ type: 'add', payload: { coordinates: newStroke } })
-                }
-                }
-            />
             <Board
                 strokes={layer.strokes.length}
                 drawUpto={drawUpto}
                 undo={() => dispatch({ type: 'undo' })}
                 redo={() => dispatch({ type: 'redo' })}
                 del={(index: number) => dispatch({ type: 'delete', payload: index })}
+            />
+            <Canvas
+                layersCount={drawingStack.length}
+                canvasRef={canvasRef}
+                addStrokes={(newStroke: pointer[]) => {
+                    dispatch({ type: 'add', payload: { coordinates: newStroke } })
+                }
+                }
             />
         </div>
     )
@@ -137,9 +135,9 @@ function Board({ strokes, drawUpto, undo, redo, del }: boardProp): JSX.Element {
         (_, index) => drawUpto + index + 1
     );
     return (
-        <div className='w-1/3 py-2 h-full flex flex-col bg-sky-50 rounded-sm'>
+        <div className='w-1/5 py-2 h-full flex flex-col bg-sky-50 rounded-sm'>
             <div className='text-center  h-10'>Dashboard</div>
-            <div className='flex-1 max-h-72 overflow-y-auto px-5 border-2 border-gray-300'>
+            <div className='flex-1 max-h-96 overflow-y-auto px-5 border-2 border-gray-300'>
                 {strokes} strokes
                 <br />
                 <button className='bg-blue-200 w-full my-1 py-1 rounded-md border-1'

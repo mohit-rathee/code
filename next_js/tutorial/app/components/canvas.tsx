@@ -1,7 +1,7 @@
 "use client";
 import React, { useRef, useState, useEffect } from "react";
 
-function Canvas({ layerStackRef, canvasRef, addStrokes, layersCount }: canvasProp) {
+function Canvas({ canvasRef, addStrokes, layersCount }: canvasProp) {
     const [isDrawing, setIsDrawing] = useState<boolean>(false)
     const [currentStroke, setCurrentStroke] = useState<pointer[]>([])
     const [context, setContext] = useState<CanvasRenderingContext2D | null>(null);
@@ -81,26 +81,25 @@ function Canvas({ layerStackRef, canvasRef, addStrokes, layersCount }: canvasPro
             draw={draw}
             stopDrawing={stopDrawing}
             canvasRef={canvasRef}
-            layerStackRef={layerStackRef}
             layersCount={layersCount}
         />
     )
 }
 
-const LayerStack = ({ startDrawing, draw, stopDrawing, canvasRef, layerStackRef, layersCount }: any) => {
+const LayerStack = ({ startDrawing, draw, stopDrawing, canvasRef, layersCount }: any) => {
     const layers_canvas = Array.from(
         { length: layersCount+1 },
         (_, index) => index
     );
     return (
-        <div ref={layerStackRef}>
+        <div className="relative w-4/5 bg-white rounded-sm border-2 border-red-300" >
             {layers_canvas.map((index: number) => {
                 if (index != layersCount) {
                     return (
-                        <canvas className='absolute bg-white rounded-sm border-2 border-red-300'
+                        <canvas className='absolute rounded-sm border-2 border-red-300'
                             ref={(el) => { canvasRef.current[index] = el }}
                             key={index}
-                            width={800}
+                            width={947}
                             height={550}
                             style={{
                                 background: 'transparent',
@@ -108,21 +107,17 @@ const LayerStack = ({ startDrawing, draw, stopDrawing, canvasRef, layerStackRef,
                         />)
                 } else {
                     return (
-                        <canvas className='bg-white rounded-sm border-2 border-red-300'
+                        <canvas className='relative rounded-sm border-2 border-red-300'
                             ref={(el) => { canvasRef.current[layersCount] = el }}
                             key={layersCount}
                             onMouseDown={startDrawing}
                             onMouseMove={draw}
                             onMouseUp={stopDrawing}
                             //TODO make it react to resizes
-                            width={800}
+                            width={947}
                             height={550}
                             style={{
                                 background: 'transparent',
-                                position: 'relative',
-                                top: 0,
-                                left: 0,
-                                zIndex: 100
                             }}
                         />)
                 }
