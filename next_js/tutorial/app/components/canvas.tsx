@@ -1,7 +1,7 @@
 "use client";
 import React, { useRef, useState, useEffect } from "react";
 
-function Canvas ({ canvasRef, addStrokes }: canvasProp) {
+function Canvas({ layerStackRef, canvasRef, addStrokes, layersCount }: canvasProp) {
     const [isDrawing, setIsDrawing] = useState<boolean>(false)
     const [currentStroke, setCurrentStroke] = useState<pointer[]>([])
     const [context, setContext] = useState<CanvasRenderingContext2D | null>(null);
@@ -10,12 +10,15 @@ function Canvas ({ canvasRef, addStrokes }: canvasProp) {
     const isDrawingRef = useRef(isDrawing)
     const currentStrokeRef = useRef(currentStroke)
     useEffect(() => {
-        const canvas = canvasRef.current
-        if (canvas) {
-            const ctx = canvas.getContext('2d')
+        if (!canvasRef.current) return;
+        const canvasArr = canvasRef.current
+        const topmostCanvas = canvasArr[canvasArr.length - 1]
+        if (topmostCanvas) {
+            const ctx = topmostCanvas.getContext('2d')
+            if (ctx) ctx.globalAlpha = 1;
             setContext(ctx)
         }
-    }, [canvasRef])
+    }, [canvasRef, canvasRef.current?.length])
     useEffect(() => {
         isDrawingRef.current = isDrawing;
         currentStrokeRef.current = currentStroke;
@@ -23,7 +26,10 @@ function Canvas ({ canvasRef, addStrokes }: canvasProp) {
 
     // handleMouseDown
     const startDrawing = (event: React.MouseEvent) => {
-        const canvas = canvasRef.current
+        if (!canvasRef.current) return;
+        const canvas = canvasRef.current[canvasRef.current.length - 1]
+        const context = canvas.getContext('2d')
+        setContext(context)
         const rect = canvas?.getBoundingClientRect() || { left: 0, top: 0 };
         const startingPoint = {
             x: Number((event.clientX - rect.left).toFixed(2)),
@@ -37,9 +43,10 @@ function Canvas ({ canvasRef, addStrokes }: canvasProp) {
 
     //function handleMouseMove
     const draw = (event: React.MouseEvent) => {
+        if (!canvasRef.current) return;
         if (!context) return;
-        const canvas = canvasRef.current
-        const rect = canvas?.getBoundingClientRect() || { left: 0, top: 0 };
+        const canvas = canvasRef.current[canvasRef.current.length - 1]
+        const rect = canvas.getBoundingClientRect() || { left: 0, top: 0 };
         const newPoint = {
             x: Number((event.clientX - rect.left).toFixed(2)),
             y: Number((event.clientY - rect.top).toFixed(2)),
@@ -53,9 +60,10 @@ function Canvas ({ canvasRef, addStrokes }: canvasProp) {
 
     // handleMouseUp
     const stopDrawing = (event: React.MouseEvent) => {
+        if (!canvasRef.current) return;
         setIsDrawing(false)
-        const canvas = canvasRef.current
-        const rect = canvas?.getBoundingClientRect() || { left: 0, top: 0 };
+        const canvas = canvasRef.current[canvasRef.current.length - 1]
+        const rect = canvas.getBoundingClientRect() || { left: 0, top: 0 };
         const stopingPoint = {
             x: Number((event.clientX - rect.left).toFixed(2)),
             y: Number((event.clientY - rect.top).toFixed(2)),
@@ -68,26 +76,58 @@ function Canvas ({ canvasRef, addStrokes }: canvasProp) {
     }
 
     return (
-        <CanvasDiv
+        <LayerStack
             startDrawing={startDrawing}
             draw={draw}
             stopDrawing={stopDrawing}
             canvasRef={canvasRef}
+            layerStackRef={layerStackRef}
+            layersCount={layersCount}
         />
     )
 }
 
-const CanvasDiv = ({ startDrawing, draw, stopDrawing, canvasRef }: any) => {
+const LayerStack = ({ startDrawing, draw, stopDrawing, canvasRef, layerStackRef, layersCount }: any) => {
+    const layers_canvas = Array.from(
+        { length: layersCount+1 },
+        (_, index) => index
+    );
     return (
-        <canvas className='bg-white rounded-sm border-2 border-red-300'
-            ref={canvasRef}
-            onMouseDown={startDrawing}
-            onMouseMove={draw}
-            onMouseUp={stopDrawing}
-            //TODO make it react to resizes
-            width={800}
-            height={550}
-        />
+        <div ref={layerStackRef}>
+            {layers_canvas.map((index: number) => {
+                if (index != layersCount) {
+                    return (
+                        <canvas className='absolute bg-white rounded-sm border-2 border-red-300'
+                            ref={(el) => { canvasRef.current[index] = el }}
+                            key={index}
+                            width={800}
+                            height={550}
+                            style={{
+                                background: 'transparent',
+                            }}
+                        />)
+                } else {
+                    return (
+                        <canvas className='bg-white rounded-sm border-2 border-red-300'
+                            ref={(el) => { canvasRef.current[layersCount] = el }}
+                            key={layersCount}
+                            onMouseDown={startDrawing}
+                            onMouseMove={draw}
+                            onMouseUp={stopDrawing}
+                            //TODO make it react to resizes
+                            width={800}
+                            height={550}
+                            style={{
+                                background: 'transparent',
+                                position: 'relative',
+                                top: 0,
+                                left: 0,
+                                zIndex: 100
+                            }}
+                        />)
+                }
+            })}
+        </div>
     )
 }
 
