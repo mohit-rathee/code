@@ -46,9 +46,9 @@ const initialLayerState: Layer = {
     length: 0,
 };
 
-const initialStrokePointer:stroke_pointer = {
+const initialStrokePointer: stroke_pointer = {
     layer: 0,
-    stroke:0
+    stroke: 0
 }
 
 function Playground() {
@@ -62,7 +62,7 @@ function Playground() {
             case ACTION.ADD:
                 setLastAction('add')
                 if (state.length + action.payload.coordinates.length >= THRESHOLD_VALUE) {
-                    setLayersStack([...layersStack.splice(0,strokePointer.layer), state])
+                    setLayersStack([...layersStack.splice(0, strokePointer.layer), state])
                     return {
                         strokes: [action.payload],
                         length: action.payload.coordinates.length
@@ -73,24 +73,30 @@ function Playground() {
                     return {
                         length: new_length,
                         strokes: [...state.strokes.splice(0, strokePointer.stroke),
-                            action.payload]
+                        action.payload]
                     }
                 }
             case ACTION.UNDO:
                 setLastAction('undo')
                 const prevStrokeIndex = strokePointer.stroke - 1;
+                const prevLayerIndex = Math.max(strokePointer.layer - 1, 0)
+                // Already at oldest change
+                if (prevStrokeIndex < 0 && prevLayerIndex < 0) {
+                    return state
+                }
+                // undo previous layer
                 if (prevStrokeIndex < 0) {
                     // To save the current layer before loading prevLayer
-                    // TODO: add current layer into stack
-                    const prevLayerIndex = Math.max(strokePointer.layer-1,0)
+                    // TODO: add current layer into layersStack
+                    setLayersStack([...layersStack, state])
                     const prevLayer = layersStack[prevLayerIndex]
                     setStrokePointer({
-                        layer:prevLayerIndex,
-                        stroke:prevLayer.strokes.length
+                        layer: prevLayerIndex,
+                        stroke: prevLayer.strokes.length
                     })
                     return prevLayer;
 
-                } else {
+                } else { // undo current layer
                     setStrokePointer({
                         ...strokePointer,
                         stroke: prevStrokeIndex
@@ -99,8 +105,22 @@ function Playground() {
                 }
             case ACTION.REDO:
                 setLastAction('redo')
-                setStrokePointer(Math.min(strokePointer + 1, state.strokes.length))
-                return state
+                const nextStrokeIndex = strokePointer.stroke + 1
+                const nextLayerIndex = strokePointer.layer + 1
+                const maxStroke =  layersStack[strokePointer.layer].strokes.length
+                const maxLayer =  layersStack.length - 1
+                // Already at newest change
+                if (nextStrokeIndex > maxStroke && nextLayerIndex < maxLayer) {
+                    return state
+                }
+                // redo next layer
+                if (nextStrokeIndex > maxStroke) {
+                    const nextLayer = layersStack[nextLayerIndex]
+                    setStrokePointer({
+                        layer:nextLayerIndex,
+                        stroke:0
+                    })
+                    return nextLayer
             // case ACTION.DELETE:
             //     setLastAction('delete')
             //     setStrokePointer(Math.max(strokePointer - 1, 0))
@@ -130,7 +150,7 @@ function Playground() {
                 strokes={layer.strokes.length}
                 undo={() => dispatch({ type: 'undo' })}
                 redo={() => dispatch({ type: 'redo' })}
-                // del={(index: number) => dispatch({ type: 'delete', payload: index })}
+            // del={(index: number) => dispatch({ type: 'delete', payload: index })}
             />
             <Canvas
                 layersCount={layersStack.length}
