@@ -25,20 +25,8 @@ interface boardProp {
     redo: () => void;
     // del: (index: number) => void;
 }
-type StrokeActionProp =
-    | { type: 'add'; payload: Stroke }
-    | { type: 'undo' }
-    | { type: 'redo' }
-    // | { type: 'delete'; payload: number };
-
-type Action = {
-    ADD: 'add',
-    UNDO: 'undo',
-    REDO: 'redo',
-    // DELETE: 'delete'
-}
 interface canvasProp {
     canvasRef: React.RefObject<HTMLCanvasElement[]>;
-    addStrokes: (strokes: pointer[]) => void;
+    addStroke: (stroke: Stroke) => void;
     layersCount: number;
 }
