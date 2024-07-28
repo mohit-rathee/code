@@ -1,7 +1,7 @@
 "use client";
 import React, { useRef, useState, useEffect } from "react";
 
-function Canvas({ canvasRef, addStrokes, layersCount }: canvasProp) {
+function Canvas({ canvasRef, addStroke, layersCount }: canvasProp) {
     const [isDrawing, setIsDrawing] = useState<boolean>(false)
     const [currentStroke, setCurrentStroke] = useState<pointer[]>([])
     const [context, setContext] = useState<CanvasRenderingContext2D | null>(null);
@@ -71,10 +71,11 @@ function Canvas({ canvasRef, addStrokes, layersCount }: canvasProp) {
         context?.moveTo(stopingPoint.x, stopingPoint.y)
         context?.stroke()
         context?.closePath();
-        const newStroke = [...currentStrokeRef.current, stopingPoint]
-        addStrokes(newStroke);
+        const newStroke: Stroke = {
+            coordinates:[...currentStrokeRef.current, stopingPoint],
+        }
+        addStroke(newStroke);
     }
-
     return (
         <LayerStack
             startDrawing={startDrawing}

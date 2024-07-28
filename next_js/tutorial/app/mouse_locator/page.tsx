@@ -14,12 +14,6 @@ export default function Home() {
 }
 
 const THRESHOLD_VALUE = 200
-const ACTION: Action = {
-    ADD: 'add',
-    UNDO: 'undo',
-    REDO: 'redo',
-    // DELETE: 'delete'
-}
 
 function redraw_canvas(canvas: HTMLCanvasElement, strokes: Layer, strokePointer: stroke_pointer) {
     const context = canvas.getContext('2d')
@@ -113,46 +107,49 @@ function Playground() {
     }
     function add(stroke: Stroke) {
         setLastAction('add')
-        if (layer.length + stroke.coordinates.length >= THRESHOLD_VALUE) {
+        const new_length = (layer.length + stroke.coordinates.length)
+        setLayer({
+            length: new_length,
+            strokes: [...layer.strokes.splice(0, strokePointer.stroke), stroke]
+        })
+        if (new_length >= THRESHOLD_VALUE) {
+            // add new empty layer
             setLayersStack([...layersStack.splice(0, strokePointer.layer), layer])
-            return {
-                strokes: [stroke],
-                length: stroke.coordinates.length
-            }
-        } else {
-            const new_length = (layer.length + stroke.coordinates.length)
-            return {
-                length: new_length,
-                strokes: [...layer.strokes.splice(0, strokePointer.stroke), stroke]
-            }
+            setStrokePointer({
+                layer: strokePointer.layer + 1,
+                stroke: 0
+            })
+            setLayer(initialLayerState)
+        }else{
+            setStrokePointer({
+                layer: strokePointer.layer,
+                stroke: strokePointer.stroke+1
+            })
         }
     }
     // TODO delete stroke by taking layer & stroke index
     //     setLastAction('delete')
-useEffect(() => {
-    // draw strokes
-    if (lastAction && lastAction != "add" && canvasRef.current) {
-        const canvas = canvasRef.current[canvasRef.current.length - 1]
-        redraw_canvas(canvas, layer, strokePointer)
-    }
-}, [lastAction, layer, strokePointer])
-// useEffect(() => {
-//     setStrokePointer(layer.strokes.length)
-// }, [layer])
+    useEffect(() => {
+        // draw strokes
+        if (lastAction && lastAction != "add" && canvasRef.current) {
+            const canvas = canvasRef.current[canvasRef.current.length - 1]
+            redraw_canvas(canvas, layer, strokePointer)
+        }
+    }, [lastAction, layer, strokePointer])
 
-return (
-    <div className='w-full h-full flex-grow bg-gray-200 gap-5 p-5 flex items-center justify-center'>
-        <Board
-            strokes={layer.strokes.length}
-            undo={undo}
-            redo={redo}
-        // del={(index: number) => dispatch({ type: 'delete', payload: index })}
-        />
-        <Canvas
-            layersCount={layersStack.length}
-            canvasRef={canvasRef}
-            addStroke={add}
-        />
-    </div>
-)
+    return (
+        <div className='w-full h-full flex-grow bg-gray-200 gap-5 p-5 flex items-center justify-center'>
+            <Board
+                strokes={layer.strokes.length}
+                undo={undo}
+                redo={redo}
+            // del={(index: number) => dispatch({ type: 'delete', payload: index })}
+            />
+            <Canvas
+                layersCount={layersStack.length}
+                canvasRef={canvasRef}
+                addStroke={add}
+            />
+        </div>
+    )
 }
