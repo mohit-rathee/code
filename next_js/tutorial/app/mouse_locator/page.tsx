@@ -161,8 +161,8 @@ function Playground() {
         if (newLength >= THRESHOLD_VALUE) {
             // add new empty layer
             setLayersStack([...layersStack.splice(0, strokePointer.layer), {
-                ...layer,
-                length: layerLength
+                length: layerLength,
+                strokes: layer.strokes.splice(0, strokePointer.stroke)
             }])
             const nextLayer: Layer = {
                 length: stroke.coordinates.length,
