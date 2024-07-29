@@ -15,10 +15,10 @@ export default function Home() {
 
 const THRESHOLD_VALUE = 200
 
-function redrawLayer(layerCanvas: any,firstStroke:number, lastStroke: number, layerData: Layer) {
+function redrawLayer(layerCanvas: any, firstStroke: number, lastStroke: number, layerData: Layer) {
     const context = layerCanvas.getContext('2d')
     if (!context) return;
-    if (firstStroke==0){
+    if (firstStroke == 0) {
         context.clearRect(0, 0, layerCanvas.width, layerCanvas.height);
     }
     for (let i = firstStroke; i < lastStroke; i++) {
@@ -59,7 +59,7 @@ function redraw(canvasRef: any, lastAction: any, layersStack: DrawingState, laye
         // draw last stroke on top canvas
         const topLayerIndex = strokePointer.layer
         const topLayerCanvas = canvasRef.current[topLayerIndex]
-        redrawLayer(topLayerCanvas, strokePointer.stroke-1, strokePointer.stroke, layer)
+        redrawLayer(topLayerCanvas, strokePointer.stroke - 1, strokePointer.stroke, layer)
     }
 }
 
@@ -80,6 +80,7 @@ function Playground() {
     const [strokePointer, setStrokePointer] = useState<stroke_pointer>(initialStrokePointer)
     const [layersStack, setLayersStack] = useState<DrawingState>([])
     const [layer, setLayer] = useState<Layer>(initialLayerState)
+    const [layerLength, setLayerLength] = useState<number>(0)
     function undo() {
         setLastAction('undo')
         console.log('undo')
@@ -97,6 +98,7 @@ function Playground() {
             setLayersStack([...layersStack, layer])
             const prevLayer = layersStack[prevLayerIndex]
             setLayer(prevLayer)
+            setLayerLength(prevLayer.length)
             // Point to 2nd last el in prevlayer
             setStrokePointer({
                 layer: prevLayerIndex,
@@ -107,59 +109,71 @@ function Playground() {
                 ...strokePointer,
                 stroke: prevStrokeIndex
             })
+            const prevStrokeLength = layer.strokes[prevStrokeIndex].coordinates.length
+            setLayerLength(layerLength - prevStrokeLength)
             return
         }
     }
     function redo() {
         setLastAction('redo')
         console.log('redo')
-        const nextStrokeIndex = strokePointer.stroke + 1
+        const nextStroke = strokePointer.stroke + 1
         const nextLayerIndex = strokePointer.layer + 1
         const maxStroke = layer.strokes.length
         const maxLayer = layersStack.length
         // Already at newest change
-        if (nextStrokeIndex > maxStroke && nextLayerIndex >= maxLayer) {
+        if (nextStroke > maxStroke && nextLayerIndex >= maxLayer) {
             console.log('newest change')
             return
         }
         // redo next layer
-        if (nextStrokeIndex > maxStroke) {
+        if (nextStroke > maxStroke) {
             const nextLayer = layersStack[nextLayerIndex]
             setLayer(nextLayer)
+            setLayerLength(nextLayer.length)
             setStrokePointer({
                 layer: nextLayerIndex,
                 stroke: 1
             })
         } else {
             // redo current layer
+            console.log('hello')
             setStrokePointer({
                 ...strokePointer,
-                stroke: nextStrokeIndex
+                stroke: nextStroke
             })
+            const nextStrokeIndex = nextStroke - 1
+            const nextStrokeLength = layer.strokes[nextStrokeIndex].coordinates.length
+            setLayerLength(layerLength + nextStrokeLength)
             return
         }
     }
     function add(stroke: Stroke) {
         setLastAction('add')
-        const new_length = (layer.length + stroke.coordinates.length)
-        if (new_length >= THRESHOLD_VALUE) {
+        const newLength = (layerLength + stroke.coordinates.length)
+        if (newLength >= THRESHOLD_VALUE) {
             // add new empty layer
-            setLayersStack([...layersStack.splice(0, strokePointer.layer), layer])
+            setLayersStack([...layersStack.splice(0, strokePointer.layer), {
+                ...layer,
+                length: layerLength
+            }])
             const nextLayer: Layer = {
                 length: stroke.coordinates.length,
                 strokes: [stroke]
             }
             setLayer(nextLayer)
+            setLayerLength(stroke.coordinates.length)
             setStrokePointer({
                 layer: strokePointer.layer + 1,
                 stroke: 1
             })
         } else {
             const newLayerState: Layer = {
-                length: new_length,
+                length: newLength,
                 strokes: [...layer.strokes.splice(0, strokePointer.stroke), stroke]
             }
             setLayer(newLayerState)
+            setLayerLength(newLength)
             setStrokePointer({
                 layer: strokePointer.layer,
                 stroke: strokePointer.stroke + 1
@@ -177,6 +191,7 @@ function Playground() {
     console.log(layersStack)
     console.log('strokes in current layer')
     console.log(layer)
+    console.log(layerLength)
     console.log('strokePointer')
     console.log(strokePointer)
     return (
