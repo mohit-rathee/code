@@ -45,6 +45,9 @@ function Canvas({ canvasRef, addStroke, lastLayerIndex }: canvasProp) {
         if (!canvasRef.current) return;
         setIsDrawing(false)
         const canvas = canvasRef.current[canvasRef.current.length - 1]
+        if(canvas === null){
+            console.log(canvasRef.current)
+        }
         const rect = canvas.getBoundingClientRect() || { left: 0, top: 0 };
         const stopingPoint = {
             x: Number((event.clientX - rect.left).toFixed(2)),

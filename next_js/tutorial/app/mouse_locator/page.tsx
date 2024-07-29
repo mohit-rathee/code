@@ -100,8 +100,8 @@ function Playground() {
             }
             const prevLayer = layersStack[prevLayerIndex]
             setLayer(prevLayer)
-            const prevLayerLastStrokeLength = prevLayer.strokes[prevLayer.strokes.length-1].coordinates.length
-            setLayerLength(prevLayer.length-prevLayerLastStrokeLength)
+            const prevLayerLastStrokeLength = prevLayer.strokes[prevLayer.strokes.length - 1].coordinates.length
+            setLayerLength(prevLayer.length - prevLayerLastStrokeLength)
             // Point to 2nd last el in prevlayer
             setStrokePointer({
                 layer: prevLayerIndex,
@@ -179,6 +179,13 @@ function Playground() {
                 length: newLength,
                 strokes: [...layer.strokes.splice(0, strokePointer.stroke), stroke]
             }
+            if (strokePointer.layer != layersStack.length) {
+                setLayersStack([...layersStack.splice(0, strokePointer.layer), {
+                    length: layerLength,
+                    strokes: layer.strokes.splice(0, strokePointer.stroke)
+                }])
+
+            }
             setLayer(newLayerState)
             setLayerLength(newLength)
             setStrokePointer({
@@ -195,12 +202,19 @@ function Playground() {
     }, [lastAction, layersStack, layer, strokePointer])
 
     useEffect(() => {
-        const length = canvasRef.current.length - 1;
-        let i = length
+        if (!canvasRef.current) return
+        const length = canvasRef.current.length;
+        let i = length - 1
         while (i >= 0 && canvasRef.current[i] === null) {
             i--;
         }
-        canvasRef.current.splice(i, length - i);
+        const nullStartIndex = Math.min(i + 1, canvasRef.current.length)
+        console.log(canvasRef.current)
+        console.log(nullStartIndex)
+        console.log(length - nullStartIndex)
+        canvasRef.current.splice(nullStartIndex, length - nullStartIndex);
+        console.log('updating canvasRef')
+        console.log(canvasRef.current)
     })
 
     console.log(layersStack)
