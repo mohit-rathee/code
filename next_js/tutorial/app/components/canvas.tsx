@@ -4,32 +4,13 @@ import React, { useRef, useState, useEffect } from "react";
 function Canvas({ canvasRef, addStroke, lastLayerIndex }: canvasProp) {
     const [isDrawing, setIsDrawing] = useState<boolean>(false)
     const [currentStroke, setCurrentStroke] = useState<pointer[]>([])
-    const [context, setContext] = useState<CanvasRenderingContext2D | null>(null);
 
 
-    const isDrawingRef = useRef(isDrawing)
-    const currentStrokeRef = useRef(currentStroke)
-    useEffect(() => {
-        if (!canvasRef.current) return;
-        const canvasArr = canvasRef.current
-        const topmostCanvas = canvasArr[canvasArr.length - 1]
-        if (topmostCanvas) {
-            const ctx = topmostCanvas.getContext('2d')
-            if (ctx) ctx.globalAlpha = 1;
-            setContext(ctx)
-        }
-    }, [canvasRef, canvasRef.current?.length])
-    useEffect(() => {
-        isDrawingRef.current = isDrawing;
-        currentStrokeRef.current = currentStroke;
-    }, [currentStroke, isDrawing]);
 
     // handleMouseDown
     const startDrawing = (event: React.MouseEvent) => {
         if (!canvasRef.current) return;
         const canvas = canvasRef.current[canvasRef.current.length - 1]
-        const context = canvas.getContext('2d')
-        setContext(context)
         const rect = canvas?.getBoundingClientRect() || { left: 0, top: 0 };
         const startingPoint = {
             x: Number((event.clientX - rect.left).toFixed(2)),
@@ -37,6 +18,7 @@ function Canvas({ canvasRef, addStroke, lastLayerIndex }: canvasProp) {
         };
         setIsDrawing(true)
         setCurrentStroke([startingPoint])
+        const context = canvas.getContext('2d')
         context?.beginPath()
         context?.moveTo(startingPoint.x, startingPoint.y);
     }
@@ -44,16 +26,16 @@ function Canvas({ canvasRef, addStroke, lastLayerIndex }: canvasProp) {
     //function handleMouseMove
     const draw = (event: React.MouseEvent) => {
         if (!canvasRef.current) return;
-        if (!context) return;
         const canvas = canvasRef.current[canvasRef.current.length - 1]
         const rect = canvas.getBoundingClientRect() || { left: 0, top: 0 };
         const newPoint = {
             x: Number((event.clientX - rect.left).toFixed(2)),
             y: Number((event.clientY - rect.top).toFixed(2)),
         };
-        if (isDrawingRef.current) {
-            context.lineTo(newPoint.x, newPoint.y);
-            context.stroke();
+        if (isDrawing) {
+            const context = canvas.getContext('2d')
+            context?.lineTo(newPoint.x, newPoint.y);
+            context?.stroke();
             setCurrentStroke((currentStroke) => [...currentStroke, newPoint])
         }
     }
@@ -68,11 +50,12 @@ function Canvas({ canvasRef, addStroke, lastLayerIndex }: canvasProp) {
             x: Number((event.clientX - rect.left).toFixed(2)),
             y: Number((event.clientY - rect.top).toFixed(2)),
         };
+        const context = canvas.getContext('2d')
         context?.moveTo(stopingPoint.x, stopingPoint.y)
         context?.stroke()
         context?.closePath();
         const newStroke: Stroke = {
-            coordinates: [...currentStrokeRef.current, stopingPoint],
+            coordinates: [...currentStroke, stopingPoint],
         }
         addStroke(newStroke);
     }

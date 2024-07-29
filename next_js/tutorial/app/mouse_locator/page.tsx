@@ -95,10 +95,13 @@ function Playground() {
         if (prevStrokeIndex < 0) {
             // To save the current layer before loading prevLayer
             // TODO: add current layer into layersStack
-            setLayersStack([...layersStack, layer])
+            if (strokePointer.layer == layersStack.length) {
+                setLayersStack([...layersStack, layer])
+            }
             const prevLayer = layersStack[prevLayerIndex]
             setLayer(prevLayer)
-            setLayerLength(prevLayer.length)
+            const prevLayerLastStrokeLength = prevLayer.strokes[prevLayer.strokes.length-1].coordinates.length
+            setLayerLength(prevLayer.length-prevLayerLastStrokeLength)
             // Point to 2nd last el in prevlayer
             setStrokePointer({
                 layer: prevLayerIndex,
@@ -110,6 +113,10 @@ function Playground() {
                 stroke: prevStrokeIndex
             })
             const prevStrokeLength = layer.strokes[prevStrokeIndex].coordinates.length
+            console.log('--------')
+            console.log(layerLength)
+            console.log(prevStrokeLength)
+            console.log('--------')
             setLayerLength(layerLength - prevStrokeLength)
             return
         }
@@ -187,10 +194,19 @@ function Playground() {
         redraw(canvasRef, lastAction, layersStack, layer, strokePointer)
     }, [lastAction, layersStack, layer, strokePointer])
 
-    console.log('stacklayers')
+    useEffect(() => {
+        const length = canvasRef.current.length - 1;
+        let i = length
+        while (i >= 0 && canvasRef.current[i] === null) {
+            i--;
+        }
+        canvasRef.current.splice(i, length - i);
+    })
+
     console.log(layersStack)
     console.log('strokes in current layer')
     console.log(layer)
+    console.log('layer length')
     console.log(layerLength)
     console.log('strokePointer')
     console.log(strokePointer)
