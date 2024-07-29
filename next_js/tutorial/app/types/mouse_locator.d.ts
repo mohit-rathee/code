@@ -14,19 +14,17 @@ interface Layer {
 }
 
 interface stroke_pointer {
-    layer: number;
-    stroke: number;
+    layer: number; // current layer index
+    stroke: number; // no of strokes to draw
 }
 type DrawingState = Layer[];
 
 interface boardProp {
-    strokes: number;
     undo: () => void;
     redo: () => void;
-    // del: (index: number) => void;
 }
 interface canvasProp {
     canvasRef: React.RefObject<HTMLCanvasElement[]>;
     addStroke: (stroke: Stroke) => void;
-    layersCount: number;
+    lastLayerIndex: number;
 }

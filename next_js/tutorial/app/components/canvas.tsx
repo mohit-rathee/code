@@ -1,7 +1,7 @@
 "use client";
 import React, { useRef, useState, useEffect } from "react";
 
-function Canvas({ canvasRef, addStroke, layersCount }: canvasProp) {
+function Canvas({ canvasRef, addStroke, lastLayerIndex }: canvasProp) {
     const [isDrawing, setIsDrawing] = useState<boolean>(false)
     const [currentStroke, setCurrentStroke] = useState<pointer[]>([])
     const [context, setContext] = useState<CanvasRenderingContext2D | null>(null);
@@ -72,7 +72,7 @@ function Canvas({ canvasRef, addStroke, layersCount }: canvasProp) {
         context?.stroke()
         context?.closePath();
         const newStroke: Stroke = {
-            coordinates:[...currentStrokeRef.current, stopingPoint],
+            coordinates: [...currentStrokeRef.current, stopingPoint],
         }
         addStroke(newStroke);
     }
@@ -82,20 +82,20 @@ function Canvas({ canvasRef, addStroke, layersCount }: canvasProp) {
             draw={draw}
             stopDrawing={stopDrawing}
             canvasRef={canvasRef}
-            layersCount={layersCount}
+            lastLayerIndex={lastLayerIndex}
         />
     )
 }
 
-const LayerStack = ({ startDrawing, draw, stopDrawing, canvasRef, layersCount }: any) => {
+const LayerStack = ({ startDrawing, draw, stopDrawing, canvasRef, lastLayerIndex }: any) => {
     const layers_canvas = Array.from(
-        { length: layersCount+1 },
+        { length: lastLayerIndex + 1 },
         (_, index) => index
     );
     return (
         <div className="relative w-4/5 bg-white rounded-sm border-2 border-red-300" >
             {layers_canvas.map((index: number) => {
-                if (index != layersCount) {
+                if (index != lastLayerIndex) {
                     return (
                         <canvas className='absolute rounded-sm border-2 border-red-300'
                             ref={(el) => { canvasRef.current[index] = el }}
@@ -109,8 +109,8 @@ const LayerStack = ({ startDrawing, draw, stopDrawing, canvasRef, layersCount }:
                 } else {
                     return (
                         <canvas className='relative rounded-sm border-2 border-red-300'
-                            ref={(el) => { canvasRef.current[layersCount] = el }}
-                            key={layersCount}
+                            ref={(el) => { canvasRef.current[lastLayerIndex] = el }}
+                            key={lastLayerIndex}
                             onMouseDown={startDrawing}
                             onMouseMove={draw}
                             onMouseUp={stopDrawing}
