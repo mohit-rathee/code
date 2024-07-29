@@ -15,11 +15,13 @@ export default function Home() {
 
 const THRESHOLD_VALUE = 200
 
-function redrawLayer(layerCanvas: any, strokeCount: number, layerData: Layer) {
+function redrawLayer(layerCanvas: any,firstStroke:number, lastStroke: number, layerData: Layer) {
     const context = layerCanvas.getContext('2d')
     if (!context) return;
-    context.clearRect(0, 0, layerCanvas.width, layerCanvas.height);
-    for (let i = 0; i < strokeCount; i++) {
+    if (firstStroke==0){
+        context.clearRect(0, 0, layerCanvas.width, layerCanvas.height);
+    }
+    for (let i = firstStroke; i < lastStroke; i++) {
         const stroke = layerData.strokes[i]
         const stroke_points = stroke.coordinates
         context.beginPath();
@@ -35,17 +37,29 @@ function redrawLayer(layerCanvas: any, strokeCount: number, layerData: Layer) {
 }
 
 function redraw(canvasRef: any, lastAction: any, layersStack: DrawingState, layer: Layer, strokePointer: stroke_pointer) {
-    if (canvasRef.length == 0) return
+    if (canvasRef.current.length == 0) return
     if (lastAction == "add" && strokePointer.stroke == 1 && strokePointer.layer != 0) {
         // redraw top and 2nd top layer if possible
         const topLayerIndex = strokePointer.layer
         const topLayerCanvas = canvasRef.current[topLayerIndex]
-        redrawLayer(topLayerCanvas, strokePointer.stroke, layer)
+        redrawLayer(topLayerCanvas, 0, strokePointer.stroke, layer)
+
         const secondTopLayerCanvas = canvasRef.current[topLayerIndex - 1]
         const secondTopLayerData = layersStack[topLayerIndex - 1]
         const strokeCount = secondTopLayerData.strokes.length
-        redrawLayer(secondTopLayerCanvas, strokeCount, secondTopLayerData)
-
+        redrawLayer(secondTopLayerCanvas, 0, strokeCount, secondTopLayerData)
+    }
+    if (lastAction == "undo") {
+        // redraw top layer
+        const topLayerIndex = strokePointer.layer
+        const topLayerCanvas = canvasRef.current[topLayerIndex]
+        redrawLayer(topLayerCanvas, 0, strokePointer.stroke, layer)
+    }
+    if (lastAction == "redo") {
+        // draw last stroke on top canvas
+        const topLayerIndex = strokePointer.layer
+        const topLayerCanvas = canvasRef.current[topLayerIndex]
+        redrawLayer(topLayerCanvas, strokePointer.stroke-1, strokePointer.stroke, layer)
     }
 }
 
@@ -57,7 +71,7 @@ const initialLayerState: Layer = {
 
 const initialStrokePointer: stroke_pointer = {
     layer: 0,
-    stroke: -1
+    stroke: 0
 }
 
 function Playground() {
@@ -72,24 +86,22 @@ function Playground() {
         const prevStrokeIndex = strokePointer.stroke - 1;
         const prevLayerIndex = strokePointer.layer - 1
         // Already at oldest change
-        if (prevStrokeIndex < -1 && prevLayerIndex < 0) {
+        if (prevStrokeIndex < 0 && prevLayerIndex < 0) {
             console.log('oldest change')
             return
         }
         // undo previous layer
-        if (prevStrokeIndex < -1) {
+        if (prevStrokeIndex < 0) {
             // To save the current layer before loading prevLayer
             // TODO: add current layer into layersStack
-            if (layer.length != 0) {
-                setLayersStack([...layersStack, layer])
-            }
+            setLayersStack([...layersStack, layer])
             const prevLayer = layersStack[prevLayerIndex]
+            setLayer(prevLayer)
             // Point to 2nd last el in prevlayer
             setStrokePointer({
                 layer: prevLayerIndex,
-                stroke: Math.max(prevLayer.strokes.length - 2, 0)
+                stroke: Math.max(prevLayer.strokes.length - 1, 0)
             })
-            setLayer(prevLayer)
         } else { // undo current layer
             setStrokePointer({
                 ...strokePointer,
@@ -106,7 +118,7 @@ function Playground() {
         const maxStroke = layer.strokes.length
         const maxLayer = layersStack.length
         // Already at newest change
-        if (nextStrokeIndex == maxStroke && nextLayerIndex == maxLayer) {
+        if (nextStrokeIndex > maxStroke && nextLayerIndex >= maxLayer) {
             console.log('newest change')
             return
         }
@@ -116,7 +128,7 @@ function Playground() {
             setLayer(nextLayer)
             setStrokePointer({
                 layer: nextLayerIndex,
-                stroke: 0
+                stroke: 1
             })
         } else {
             // redo current layer
@@ -159,7 +171,7 @@ function Playground() {
     useEffect(() => {
         // draw strokes
         redraw(canvasRef, lastAction, layersStack, layer, strokePointer)
-    }, [lastAction, layer, strokePointer])
+    }, [lastAction, layersStack, layer, strokePointer])
 
     console.log('stacklayers')
     console.log(layersStack)
