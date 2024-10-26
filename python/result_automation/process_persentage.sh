@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Specify the folder containing the PDF files
-folder="/home/Arch/downloads/results/new"
+folder="/home/Arch/Downloads/results/Sem2"
 
 # Loop through each PDF file in the folder
 for file in "$folder"/*.pdf; do

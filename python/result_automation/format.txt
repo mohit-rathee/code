@@ -1,0 +1,67 @@
+BSC-MTH104G :
+
+052  'Math Theory'
+
+019  'Math Sessional'
+
+071  'Math Total'
+
+BSC-PHY103G :
+
+051 'Physics Theory'
+
+024 'Physics Sessional'
+
+075 'Physics Total'
+
+BSC-PHY113G :
+ESC-EE101G :
+
+Theory
+Marks2
+
+Theory
+Marks3
+
+Sessional
+Marks
+
+023  'Physics Sessional 2'
+034  'BEE Theory'
+
+Practical
+Marks
+
+023  'Physics Practical'
+
+021  'BEE Sessional'
+
+Practical
+Sessional
+
+Total
+
+046  'Physics Practical Total'
+055  'BEE Total'
+
+ESC-EE102G :
+
+020 'BEE Sessional 2'
+
+020 'BEE Practical'
+
+040 'BEE Practical Total'
+
+ESC-ME101G :
+
+024 'ED Sessional'
+
+070 'ED Practical'
+
+094 'ED Total'
+
+HSMCENG102G :
+
+016 'ENGLISH Sessional'
+
+AW
