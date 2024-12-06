@@ -9,3 +9,9 @@ def parseLevels(inputFile):
     with open("inputs/" + inputFile, "r") as f:
         data = [line.strip().split(' ') for line in f.readlines()]
     return data
+
+def parseGrid(inputFile):
+    with open("inputs/" + inputFile, "r") as f:
+        data = [list(line.strip()) for line in f.readlines()]
+    return data
+
