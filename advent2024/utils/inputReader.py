@@ -15,3 +15,20 @@ def parseGrid(inputFile):
         data = [list(line.strip()) for line in f.readlines()]
     return data
 
+def day5Input(inputFile):
+    with open("inputs/" + inputFile, "r") as f:
+        data = [line.strip() for line in f.readlines()]
+        priorityQ = []
+        printQ = []
+        idx = 0
+        while data[idx]:
+            priorityQ.append(data[idx].split('|'))
+            idx+=1
+        idx+=1
+        while idx<len(data):
+            printQ.append(data[idx].split(','))
+            idx+=1
+
+        return [priorityQ,printQ]
+
+
