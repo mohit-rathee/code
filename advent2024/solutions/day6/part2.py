@@ -31,13 +31,15 @@ def traverse(grid):
     maxX = len(grid)
     maxY = len(grid[0])
     # find ^
-    X = Y = 0
+    start_x = start_y = X = Y = 0
     dir = 't'
     for x in range(len(grid)):
         for y in range(len(grid[x])):
             if grid[x][y] == '^':
                 X = x
                 Y = y
+                start_x = x
+                start_y = y
     # printGrid(grid)
     while X > -1 and X < maxX and Y > -1 and Y < maxY:
         # print()
@@ -49,77 +51,63 @@ def traverse(grid):
             Y = Y-directionVectors[dir][1]
             dir = rotate(dir)
         else:
-            if type(grid[X][Y]) == list:
-                grid[X][Y].append(dir)
-            else:
-                grid[X][Y] = [dir]
+            if grid[X][Y] == ".":
+                grid[X][Y] = pattern
         # print(dir)
         # print(X, Y)
         X = X+directionVectors[dir][0]
         Y = Y+directionVectors[dir][1]
-    return grid
+    return [grid, (start_x, start_y)]
 
 
 def printGrid(grid):
     for x in grid:
         for y in x:
-            if type(y) == list:
-                for i in y:
-                    print(i, end='')
-                print('\t', end='')
-            else:
-                print(y, end='\t')
+            print(y, end=' ')
         print()
 
 
 def main():
     grid = parseGrid('problem6')
-    grid = traverse(grid)
-    loops = check_all_obstruction_points(grid)
-    print(loops)
-    printGrid(grid)
-
-
-def check_all_obstruction_points(grid):
-    points = set()
-    maxX = len(grid)
-    maxY = len(grid[0])
+    [grid, start] = traverse(grid)
     # printGrid(grid)
-    for x in range(2, maxX):
-        for y in range(maxY):
-            if type(grid[x][y]) == list:
-                # print(grid[x][y])
-                pos = check_this_obstruction_point(grid, (x, y))
-                if (pos):
-                    points.add(pos)
-    # pos = check_this_obstruction_point(grid, (6, 4))
-    return points
+    ans = check_all_obstruction_points(grid, start)
+    print(ans)
 
 
-def check_this_obstruction_point(grid, pos):
+def check_all_obstruction_points(grid, start):
+    counter = set()
     maxX = len(grid)
     maxY = len(grid[0])
-    # print(pos, end=' ')
-    (x, y) = pos
-    dir = grid[x][y]
-    for d in dir:
-        new_d = rotate(d)
-        if new_d in dir:
-            return False
-        # print(new_d)
-        while x in range(maxX) and y in range(maxY) and grid[x][y] != "#":
-            if type(grid[x][y]) == list:
-                if new_d in grid[x][y]:
-                    (x, y) = pos
-                    x += directionVectors[d][0]
-                    y += directionVectors[d][1]
-                    if (grid[x][y] != "#"):
-                        # print('found for ', pos, d, (x, y))
-                        return (x, y)
-                    # print("# already obstructed")
-                    return False
-            x += directionVectors[new_d][0]
-            y += directionVectors[new_d][1]
-        # print('not found')
-        return False
+    for x in range(maxX):
+        for y in range(maxY):
+            if grid[x][y] == pattern:
+                # print(grid[x][y])
+                if check_loop(grid, (x, y), start):
+                    counter.add((x,y))
+    return len(counter)
 
+
+def check_loop(grid, pos, start):
+    maxX, maxY = len(grid), len(grid[0])
+    visited = set()  # Track visited positions and directions
+    dir = 't'  # Start moving upwards
+    x, y = start
+    grid[pos[0]][pos[1]] = "#"
+    while True:
+        if (x, y, dir) in visited:
+            grid[pos[0]][pos[1]] = "."
+            return True
+        visited.add((x, y, dir))
+
+        x += directionVectors[dir][0]
+        y += directionVectors[dir][1]
+
+        if x < 0 or x >= maxX or y < 0 or y >= maxY:
+            grid[pos[0]][pos[1]] = "."
+            return False
+
+        if grid[x][y] == "#":
+            x -= directionVectors[dir][0]
+            y -= directionVectors[dir][1]
+            dir = rotate(dir)
