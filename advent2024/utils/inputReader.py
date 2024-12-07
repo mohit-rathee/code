@@ -30,5 +30,3 @@ def day5Input(inputFile):
             idx+=1
 
         return [priorityQ,printQ]
-
-
