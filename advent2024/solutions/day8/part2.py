@@ -11,8 +11,6 @@ def printGrid(grid):
 def main():
     grid = parseGrid('problem8')
     # printGrid(grid)
-    # print()
-    # printGrid(new_grid)
     antena_locations = traverse_grid(grid)
     anitnodes = map_antinodes(antena_locations,grid)
     print(len(anitnodes))
@@ -22,7 +20,10 @@ def map_antinodes(antena_locations, grid):
     my = len(grid[0])
     antinode_points = set()
     for (antena,locations) in antena_locations.items():
+        if(len(locations)<2):
+            continue
         combo = itertools.combinations(locations,2)
+        print(list(combo))
         # print(antena)
         for c in combo:
             p1 = c[0]
@@ -30,16 +31,15 @@ def map_antinodes(antena_locations, grid):
             gap_x = p2[0] - p1[0]
             gap_y = p2[1] - p1[1]
             # print(p1,p2,'gap_x:',gap_x,'gap_y',gap_y)
-            np1 = (p1[0]-gap_x,p1[1]-gap_y)
-            np2 = (p2[0]+gap_x,p2[1]+gap_y)
-            if np1[0] in range(mx) and np1[1] in range(my):
-                # print('new_point',np1)
+            np1 = p1
+            np2 = p2
+            while np1[0] in range(mx) and np1[1] in range(my):
                 antinode_points.add(np1)
-            #     grid[np1[0]][np1[1]] = "#"
-            if np2[0] in range(mx) and np2[1] in range(my):
-                # print('new_point',np2)
+                np1 = (np1[0]-gap_x,np1[1]-gap_y)
+
+            while np2[0] in range(mx) and np2[1] in range(my):
                 antinode_points.add(np2)
-            #     grid[np2[0]][np2[1]] = "#"
+                np2 = (np2[0]+gap_x,np2[1]+gap_y)
     return antinode_points
 
 def traverse_grid(grid):
