@@ -21,7 +21,6 @@ def main():
             isFile = True
     # print(newMem)
     compacted_mem = compacte_filesystem(newMem)
-    # print(compacted_mem)
     check_sum = calculate_checksum(compacted_mem)
     print(check_sum)
 
@@ -39,23 +38,16 @@ def calculate_checksum(mem):
 def compacte_filesystem(mem):
     start = 0
     end = len(mem)-1
-    while start <= end:
+    while start < end:
         while mem[start] != None:
             start += 1
         while mem[end] == None:
             end -= 1
+        if(start>=end):
+            break
         # print(start, end)
         mem[start] = mem[end]
         mem[end] = None
         start += 1
         end -= 1
-    # print('after')
-    start-=1
-    end+=1
-    # idk this edge case 
-    if mem[start] != None and mem[end]==None:
-        # print('swap')
-        mem[start],mem[end] = mem[end],mem[start]
-    # print(mem[start-1],mem[end+1])
-    # print(start-1,end+1)
     return mem
