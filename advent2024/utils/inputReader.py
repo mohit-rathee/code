@@ -40,5 +40,11 @@ def day7Input(inputFile):
         data = [line.strip().split(':') for line in f.readlines()]
         result = []
         for i in data:
-            result.append([i[0],i[1].strip().split(' ')]) 
+            result.append([i[0], i[1].strip().split(' ')])
         return result
+
+
+def parseMem(inputFile):
+    with open("inputs/" + inputFile, "r") as f:
+        data = list(f.readline().strip())
+        return data
