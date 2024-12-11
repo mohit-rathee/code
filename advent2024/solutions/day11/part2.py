@@ -11,10 +11,10 @@ def solve(num, lvl):
     if (num, lvl) in dp:
         # print('found for',(num,lvl),':',dp[(num,lvl)])
         return dp[(num, lvl)]
-    if lvl == 75:
+    if lvl >= 75:
         return 1  # length
     if num == 0:
-        ret = solve(1, lvl+1)
+        ret = solve(2024, lvl+2)
     elif len(str(num)) % 2 == 0:
         str_stone = str(num)
         half = len(str(num))//2
