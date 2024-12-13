@@ -43,10 +43,10 @@ def visit(x, y, plant, grid):
         return [0, 0]
     area = 1
     perimeter = 0
+    checked.add((x, y))
     for dir in directions:
         nx = x+dir[0]
         ny = y+dir[1]
-        checked.add((x, y))
         a, p = visit(nx, ny, plant, grid)
         area += a
         perimeter += p

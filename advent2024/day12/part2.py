@@ -67,11 +67,7 @@ def calculate_side(perimeter):
 
 
 def calculate_distinct_sides(common, perm):
-    not_common = common
-    if common==0:
-        not_common = 1
-    else:
-        not_common = 0
+    not_common = 0 if common else 1
     distinct = {}
     for p in perm:
         if p[common] in distinct:
@@ -83,7 +79,7 @@ def calculate_distinct_sides(common, perm):
     for d in distinct:
         arr = sorted(distinct[d])
         # print(arr)
-        arr.append(-1)
+        sides+=1
         value = arr[0]
         idx = 1
         while idx < len(arr):
