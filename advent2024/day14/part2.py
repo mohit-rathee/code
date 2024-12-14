@@ -45,7 +45,7 @@ def main(inpu):
                 grid[py][px] = '#'
 
         SEEN = set()
-        lengths = []
+        maxLength = -1
         for x in range(height):
             for y in range(width):
                 if (x, y) not in SEEN and grid[x][y] == "#":
@@ -57,11 +57,10 @@ def main(inpu):
                         nx = x + dir[0]
                         ny = y + dir[1]
                         length += traverse(nx, ny, grid, SEEN)
-                    lengths.append(length)
-        mxLength = max(lengths)
-        if mxLength >= 200:
+                    maxLength = max(maxLength,length)
+        if maxLength >= 200:
             printGrid(grid)
-            print('Length of Tree:',mxLength)
+            print('Length of Tree:',maxLength)
             print('Ans',i)
             break
 
