@@ -45,22 +45,24 @@ def main(inpu):
                 grid[py][px] = '#'
 
         SEEN = set()
-        components = 0
+        lengths = []
         for x in range(height):
             for y in range(width):
                 if (x, y) not in SEEN and grid[x][y] == "#":
                     # print(SEEN)
-                    components += 1
                     SEEN.add((x, y))
                     # print('new components added', (x, y))
+                    length = 0
                     for dir in dirs:
                         nx = x + dir[0]
                         ny = y + dir[1]
-                        traverse(nx, ny, grid, SEEN)
-        if components<=200:
-            print(i, components)
+                        length += traverse(nx, ny, grid, SEEN)
+                    lengths.append(length)
+        mxLength = max(lengths)
+        if mxLength >= 200:
             printGrid(grid)
-            print()
+            print('Length of Tree:',mxLength)
+            print('Ans',i)
             break
 
 
@@ -70,20 +72,21 @@ def traverse(x, y, grid, SEEN):
     my = len(grid[0])
     if x not in range(mx) or y not in range(my):
         # print('out of bound')
-        return
+        return 0
 
     if (x, y) in SEEN:
         # print('alreadey there')
-        return
+        return 0
     # printGrid(grid)
     # print(grid[y][x])
     if grid[x][y] == "#":
         SEEN.add((x, y))
         # print('added',(x,y))
+        length = 1
         for dir in dirs:
             nx = x + dir[0]
             ny = y + dir[1]
-            traverse(nx, ny, grid, SEEN)
-    # else:
-    #     print('# not there')
-    return
+            length+=traverse(nx, ny, grid, SEEN)
+        return length
+    else:
+        return 0
