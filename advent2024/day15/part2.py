@@ -77,12 +77,13 @@ moves_dir = {
 
 def main(input):
     grid, moves = parseInput(input)
-    printGrid(grid)
+    # printGrid(grid)
     x, y = getPos('@', grid)
-    for move in [moves[0]]:
+    for move in moves:
         dir = moves_dir[move]
         # print(dir)
         dir_vector = directions[dir]
+        # print(dir)
         if dir == 'left' or dir == 'right':
             result = check_space_for_left_and_right(x, y, dir_vector, grid)
             if result:
@@ -94,7 +95,6 @@ def main(input):
                 grid[x][y] = '@'
 
                 start_with = '[' if dir == 'right' else ']'
-                print(start_with)
                 ny = y
                 while (dir == 'left' and ny > sy) or (dir == 'right' and ny < sy):
                     ny += dir_vector[1]
@@ -103,12 +103,94 @@ def main(input):
                         start_with = ']'
                     else:
                         start_with = '['
-                    print(start_with)
+                    # print(start_with)
                 # print(sx, sy)
+        else:
+            result = check_space_for_up_and_down(x, y, dir_vector, grid)
+            # last = result[-1]
+            # last_start = [last[]]
+            # last_end = []
+            if result:
+                for lvl in result[::-1]:
+                    for block in lvl:
+                        for coordinate in block:
+                            x = coordinate[0]
+                            px = x+dir_vector[0]
+                            y = coordinate[1]
+                            # print((x,y),'-->',(px,y),end='\t')
+                            grid[px][y] = grid[x][y]
+                            grid[x][y] = '.'
+                        # print(block, end=' ')
+                    # print()
+                grid[x][y] = '.'
+                x+=dir_vector[0]
+                y+=dir_vector[1]
+                grid[x][y] = '@'
+
+
 
     printGrid(grid)
-    # result = checksum(grid)
-    # print(result)
+    result = checksum(grid)
+    print(result)
+
+
+def check_space_for_up_and_down(x, y, dir_v, grid):
+    mx = len(grid)
+    my = len(grid[0])
+    levels = [[[(x, y)]]]
+    # print(items_list)
+    first = True
+    loop = True
+    while first or loop:
+        # loop = true/false
+        first = False
+        # print(len(items_list))
+        items_list = levels[-1]
+        if len(items_list) == 0:
+            loop = False
+            continue
+        new_items_list = []
+        uniq_coords = set()
+        first = False
+        for item in items_list:
+            for coordinate in item:
+                nx = coordinate[0]+dir_v[0]
+                ny = coordinate[1]+dir_v[1]
+                if 0 <= nx < mx and 0 <= ny < my:
+                    if grid[nx][ny] == '#':
+                        # print('found wall')
+                        return False
+                    else:
+                        if (nx, ny) in uniq_coords:
+                            continue
+                        item = grid[nx][ny]
+                        if item == 'O' or item == '.':
+                            continue
+                        new_item = []
+                        new_item.append((nx, ny))
+                        uniq_coords.add((nx, ny))
+                        # print((nx,ny))
+                        # print(grid[nx][ny])
+                        if grid[nx][ny] == '[':
+                            # print('found [')
+                            ny += 1
+                            # print(ny)
+                        elif grid[nx][ny] == ']':
+                            # print('found ]')
+                            ny -= 1
+                            # print(ny)
+                        # print((nx,ny))
+                        new_item.append((nx, ny))
+                        uniq_coords.add((nx, ny))
+                        new_items_list.append(new_item)
+                else:
+                    # print('exception out of bound')
+                    return False
+        levels.append(new_items_list)
+        items_list = new_items_list
+    # for lvl in levels:
+    #     print(len(lvl))
+    return levels
 
 
 def checksum(grid):
@@ -117,7 +199,7 @@ def checksum(grid):
     sum = 0
     for x in range(mx):
         for y in range(my):
-            if grid[x][y] == 'O':
+            if grid[x][y] == '[':
                 sum += (x*100) + y
     return sum
 
