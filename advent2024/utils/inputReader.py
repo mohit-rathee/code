@@ -15,6 +15,13 @@ def parseGrid(file):
     return data
 
 
+def printGrid(grid):
+    for i in grid:
+        for j in i:
+            print(j, end=' ')
+        print()
+
+
 def day5Input(file):
     data = [line.strip() for line in file.readlines()]
     priorityQ = []
@@ -40,8 +47,8 @@ def day7Input(file):
 
 
 def parseMem(file):
-        data = list(file.readline().strip())
-        return data
+    data = list(file.readline().strip())
+    return data
 
 
 def textReader(file):
