@@ -1,3 +1,6 @@
+from utils.inputReader import printGrid
+
+
 def parseGrid(file):
     grid = []
 
@@ -29,23 +32,12 @@ def parseGrid(file):
 
 def parseInput(file):
     blocks, moves = file.read().split('\n\n')
-    # print(blocks)
     grid = parseGrid(blocks)
-    # print()
-    # print(moves)
     movesArr = []
     for move in list(moves):
         if move != '\n':
             movesArr.append(move)
-    # print(movesArr)
     return grid, movesArr
-
-
-def printGrid(grid):
-    for i in grid:
-        for j in i:
-            print(j, end=' ')
-        print()
 
 
 def getPos(string, grid):
@@ -81,116 +73,23 @@ def main(input):
     x, y = getPos('@', grid)
     for move in moves:
         dir = moves_dir[move]
-        # print(dir)
         dir_vector = directions[dir]
-        # print(dir)
-        if dir == 'left' or dir == 'right':
-            result = check_space_for_left_and_right(x, y, dir_vector, grid)
-            if result:
-                sx, sy = result
+        result = get_coordinates_to_move(x, y, dir_vector, grid)
+        if result:
+            for item in result[::-1]:
+                x,y = item
+                nx = x+dir_vector[0]
+                ny = y+dir_vector[1]
+                grid[nx][ny] = grid[x][y]
                 grid[x][y] = '.'
+            x+=dir_vector[0]
+            y+=dir_vector[1]
 
-                x += dir_vector[0]
-                y += dir_vector[1]
-                grid[x][y] = '@'
-
-                start_with = '[' if dir == 'right' else ']'
-                ny = y
-                while (dir == 'left' and ny > sy) or (dir == 'right' and ny < sy):
-                    ny += dir_vector[1]
-                    grid[x][ny] = start_with
-                    if start_with == '[':
-                        start_with = ']'
-                    else:
-                        start_with = '['
-                    # print(start_with)
-                # print(sx, sy)
-        else:
-            result = check_space_for_up_and_down(x, y, dir_vector, grid)
-            # last = result[-1]
-            # last_start = [last[]]
-            # last_end = []
-            if result:
-                for lvl in result[::-1]:
-                    for block in lvl:
-                        for coordinate in block:
-                            x = coordinate[0]
-                            px = x+dir_vector[0]
-                            y = coordinate[1]
-                            # print((x,y),'-->',(px,y),end='\t')
-                            grid[px][y] = grid[x][y]
-                            grid[x][y] = '.'
-                        # print(block, end=' ')
-                    # print()
-                grid[x][y] = '.'
-                x+=dir_vector[0]
-                y+=dir_vector[1]
-                grid[x][y] = '@'
-
-
-
-    printGrid(grid)
+    printGrid(grid,end='')
     result = checksum(grid)
     print(result)
 
 
-def check_space_for_up_and_down(x, y, dir_v, grid):
-    mx = len(grid)
-    my = len(grid[0])
-    levels = [[[(x, y)]]]
-    # print(items_list)
-    first = True
-    loop = True
-    while first or loop:
-        # loop = true/false
-        first = False
-        # print(len(items_list))
-        items_list = levels[-1]
-        if len(items_list) == 0:
-            loop = False
-            continue
-        new_items_list = []
-        uniq_coords = set()
-        first = False
-        for item in items_list:
-            for coordinate in item:
-                nx = coordinate[0]+dir_v[0]
-                ny = coordinate[1]+dir_v[1]
-                if 0 <= nx < mx and 0 <= ny < my:
-                    if grid[nx][ny] == '#':
-                        # print('found wall')
-                        return False
-                    else:
-                        if (nx, ny) in uniq_coords:
-                            continue
-                        item = grid[nx][ny]
-                        if item == 'O' or item == '.':
-                            continue
-                        new_item = []
-                        new_item.append((nx, ny))
-                        uniq_coords.add((nx, ny))
-                        # print((nx,ny))
-                        # print(grid[nx][ny])
-                        if grid[nx][ny] == '[':
-                            # print('found [')
-                            ny += 1
-                            # print(ny)
-                        elif grid[nx][ny] == ']':
-                            # print('found ]')
-                            ny -= 1
-                            # print(ny)
-                        # print((nx,ny))
-                        new_item.append((nx, ny))
-                        uniq_coords.add((nx, ny))
-                        new_items_list.append(new_item)
-                else:
-                    # print('exception out of bound')
-                    return False
-        levels.append(new_items_list)
-        items_list = new_items_list
-    # for lvl in levels:
-    #     print(len(lvl))
-    return levels
 
 
 def checksum(grid):
@@ -204,19 +103,25 @@ def checksum(grid):
     return sum
 
 
-def check_space_for_left_and_right(x, y, dir_v, grid):
-    mx = len(grid)
-    my = len(grid[0])
-    nx, ny = x, y
-    while grid[nx][ny] != '.':
-        nx += dir_v[0]
-        ny += dir_v[1]
-        # print('checking for', (nx, ny))
-        if 0 <= nx < mx and 0 <= ny < my:
-            if grid[nx][ny] == '#':
-                # print('found wall')
-                return False
-        else:
-            # print('exception out of bound')
+def get_coordinates_to_move(px, py, dir_v, grid):
+    coordinates = [(px,py)]
+    i = 0
+    while i <len(coordinates):
+        x,y = coordinates[i]
+        nx = x+dir_v[0]
+        ny = y+dir_v[1]
+        # print(nx,ny)
+        if grid[nx][ny] == '#':
             return False
-    return (nx, ny)
+        elif grid[nx][ny] in '[]':
+            # print('found[]')
+            if (nx,ny) not in coordinates:
+                coordinates.append((nx,ny))
+            if grid[nx][ny] == '[':
+                ny+=1
+            elif grid[nx][ny] == ']':
+                ny-=1
+            if (nx,ny) not in coordinates:
+                coordinates.append((nx,ny))
+        i+=1
+    return coordinates

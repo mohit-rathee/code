@@ -15,10 +15,10 @@ def parseGrid(file):
     return data
 
 
-def printGrid(grid):
+def printGrid(grid,end=' '):
     for i in grid:
         for j in i:
-            print(j, end=' ')
+            print(j, end=end)
         print()
 
 
