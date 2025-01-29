@@ -26,77 +26,65 @@ dirs = {
 def main(input):
     grid = parseGrid(input)
     newGrid = []
-    for r in grid:
-        newRow = ['.']*len(r)
-        newGrid.append(newRow)
+    # for r in grid:
+    #     newGrid.append(r)
     x, y = find_start(grid)
-    newGrid[x][y] = 'S'
-    printGrid(grid)
-    is_possible, min_score = traverse(x, y, 'right', grid, newGrid)
-    if is_possible:
-        printGrid(newGrid, end='\t')
-        print(min_score)
+    # newGrid[x][y] = 'S'
+    # printGrid(grid)
+    min_score = traverse(x, y, 'right', grid, newGrid)
+    printGrid(newGrid, end='\t')
+    print(min_score)
 
 
 seen = []
+dp = {}
 
 
 def traverse(x, y, dir, grid, newGrid):
-    if (x, y) in seen:
-        return [False, 0]
-    if grid[x][y] == '#':
-        # print('found wall')
-        newGrid[x][y] = "#"
-        return [False, 0]
-    seen.append((x, y))
-    if grid[x][y] == 'E':
-        newGrid[x][y] = "E"
-        # print('-------found End')
-        return [True, 0]
+    ix, iy = (x, y)
 
-    score = 1
-    # print('pos', (x, y))
-    # print('dir', dir)
+    if (x, y) in seen:
+        # print('touched already')
+        return float('inf')
+    if (x, y) in dp:
+        # print('found in dp')
+        if (x, y) == (ix, iy):
+            print('found at',(x,y), dp[(x, y)])
+        return dp[(x, y)]
+    if grid[x][y] == "#":
+        # print()
+        # print('at', (x, y))
+        # print('direction', dir)
+        # printGrid(newGrid, end='\t')
+        # print()
+        # print('wall found')
+        return float('inf')
+    if grid[x][y] == "E":
+        print('ending found')
+        return 0
+    # if grid[x][y] == "S":
+    #     print('error')
+    seen.append((x, y))
+    # newGrid[x][y] = '*'
     dx, dy = dirs[dir]
-    is_frwd, frwd_score = traverse(x+dx, y+dy, dir, grid, newGrid)
-    if is_frwd:
-        score += frwd_score
-    else:
-        score = float('inf')
-    left_dir, right_dir = get_l_and_r(dir)
-    left_v = dirs[left_dir]
-    lx = x+left_v[0]
-    ly = y+left_v[1]
-    left_score = right_score = float('inf')
-    is_left, left_score = traverse(lx, ly, left_dir, grid, newGrid)
-    if is_left:
-        # print('left path from', (x, y))
-        left_score = 1001+left_score
-    else:
-        left_score = float('inf')
-    right_v = dirs[right_dir]
-    rx = x+right_v[0]
-    ry = y+right_v[1]
-    is_right, right_score = traverse(rx, ry, right_dir, grid, newGrid)
-    if is_right:
-        # print('right path from', (x, y))
-        right_score = 1001+right_score
-    else:
-        right_score = float('inf')
-    # print('----')
-    # print('score at', (x, y), ':', score)
-    # print('left_score', left_score)
-    # print('right_score', right_score)
-    minimum = min(left_score, right_score, score)
-    # print('final score at', (x, y), min)
-    if minimum == float('inf'):
-        newGrid[x][y] = 'x'
-    else:
-        newGrid[x][y] = minimum
-    idx = seen.index((x, y))
-    for i in range(idx,len(seen)):
-        seen.pop()
-    return [True, minimum]
+    # print(x+dx, y+dy)
+    frwd_score = 1+traverse(x+dx, y+dy, dir, grid, newGrid)
+    final_score = frwd_score
+    for new_dir in get_l_and_r(dir):
+        dx, dy = dirs[new_dir]
+        nx = x+dx
+        ny = y+dy
+        score = 1001+traverse(nx, ny, new_dir, grid, newGrid)
+        # if (x, y) == (ix, iy):
+        # print('---',new_dir, (dx, dy), score)
+        final_score = min(final_score, score)
+    seen.pop()
+    # newGrid[x][y] = '.'
+    # if (x, y) == (ix, iy):
+    #     print('final_score', final_score)
+    if final_score != float('inf'):
+        dp[(x, y)] = final_score
+    return final_score
 
 
 def get_l_and_r(dir):
@@ -113,4 +101,4 @@ def get_l_and_r(dir):
     elif dir == 'right':
         left_dir = 'up'
         right_dir = 'down'
-    return left_dir, right_dir
+    return [left_dir, right_dir]
