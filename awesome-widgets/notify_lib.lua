@@ -2,12 +2,12 @@ local naughty = require("naughty")
 local gears = require("gears")
 local wibox = require("wibox")
 
+
 naughty.connect_signal("request::display", function(n)
-    n.timeout = 2
+
     naughty.layout.box({
         notification = n,
         border_width = 0,
-        shape = gears.shape.rounded_rect,
 
         widget_template = {
             {
