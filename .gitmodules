@@ -7,3 +7,6 @@
 [submodule "dsa"]
 	path = dsa
 	url = https://github.com/mohit-rathee/dsa
+[submodule "quick_quiz_AI"]
+	path = quick_quiz_AI
+	url = https://github.com/mohit-rathee/quick_quiz_AI
