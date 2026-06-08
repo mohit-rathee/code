@@ -4,3 +4,6 @@
 [submodule "config-corne"]
 	path = config-corne
 	url = https://github.com/mohit-rathee/config-corne
+[submodule "dsa"]
+	path = dsa
+	url = https://github.com/mohit-rathee/dsa
