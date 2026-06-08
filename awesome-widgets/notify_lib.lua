@@ -2,9 +2,12 @@ local naughty = require("naughty")
 local gears = require("gears")
 local wibox = require("wibox")
 
+local notification = {}
 
 naughty.connect_signal("request::display", function(n)
-
+    if n.appName then
+        table.insert(notification,0,n)
+    end
     naughty.layout.box({
         notification = n,
         border_width = 0,
