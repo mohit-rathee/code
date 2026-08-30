@@ -9,8 +9,7 @@ Downloads media chunks from a playlist, merges them into a video, and optionally
 
 ### `download-chunks.sh`
 
-* Accepts both `playlist.m3u8` and `playlist.txt`.
-* Creates `playlist.txt` automatically.
+* Accepts a standar `.m3u8` as a playlist file.
 * Reads the playlist, skips comments, and downloads media chunks into `chunks/`.
 
 ### `merge-chunks.sh`
@@ -23,3 +22,6 @@ Downloads media chunks from a playlist, merges them into a video, and optionally
 ## Add Soft Captions
 
 `ffmpeg -hide_banner -loglevel error -i output.mp4 -i caption.srt -c copy -c:s mov_text output_with_captions.mp4`
+
+# This was done to help me download episodes of rick & morty(coz lame browser load chunks sequentially).  I enjoyed discovering HLS from devtools and playing with bash, curl & ffmpeg. 
+## __But this shit doesn't deserve any more attention unless yt-dlp becomes lame someday (..PEACE)__

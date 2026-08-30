@@ -19,6 +19,10 @@ mkdir "$tmp_dir"
 
 while IFS= read -r line; do
 
+    # init chunk
+    if [[ "$line" =~ URI=\"([^\"]+)\" ]]; then
+        line="${BASH_REMATCH[1]}"
+    fi
     # skip comments
     [[ "$line" == \#* ]] && continue
     [[ -z "$line" ]] && continue
@@ -40,12 +44,15 @@ while IFS= read -r line; do
 
 done < "$playlist_file"
 
-# final touch (without this output is very heavy and glitchy in vlc)
-ffmpeg -loglevel quiet -i "$output_file" -c copy "$final_file"
-
-# cleanup
 rm -rf "$tmp_dir"
-rm -f "$output_file"
+# final touch (without this output is very heavy and glitchy in vlc)
+if $(ffmpeg -loglevel quiet -i "$output_file" -c copy "$final_file"); then
+    # cleanup
+    rm -f "$output_file"
+    echo "Finished"
+    echo "Output: $final_file"
+else
+    echo "Couldn't remux it, try yourself with $output_file "
+fi
 
-echo "Finished"
-echo "Output: $final_file"
+
